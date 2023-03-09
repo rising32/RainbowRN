@@ -93,9 +93,9 @@ android {
 
     compileSdkVersion rootProject.ext.compileSdkVersion
 
-    namespace "com.rainbowrn"
+    namespace "com.eve"
     defaultConfig {
-        applicationId "com.rainbowrn"
+        applicationId "com.eve"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1

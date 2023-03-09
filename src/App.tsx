@@ -1,31 +1,21 @@
 import React from 'react';
-import {
-  SafeAreaView,
-  ScrollView,
-  StatusBar,
-  useColorScheme,
-} from 'react-native';
-
-import {Colors} from 'react-native/Libraries/NewAppScreen';
-import ParticipantList from './components/ParticipantList';
-import Box from './components/Box';
-import CardView from './components/CardView';
+import {GestureHandlerRootView} from 'react-native-gesture-handler';
+import ComposeProviders from './components/ComposeProviders';
+import AppProvider from './libs/contexts/AppProvider';
+import LayoutProvider from './libs/contexts/LayoutProvider';
+import {SafeAreaProvider} from 'react-native-safe-area-context';
+import Root from './Root';
+import CustomStatusBar from './components/CustomStatusBar';
 
 function App(): JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
-
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
-  };
-
   return (
-    <SafeAreaView style={[backgroundStyle, {flex: 1}]}>
-      <StatusBar
-        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-        backgroundColor={backgroundStyle.backgroundColor}
-      />
-      <CardView />
-    </SafeAreaView>
+    <GestureHandlerRootView style={{flex: 1}}>
+      <ComposeProviders
+        components={[AppProvider, LayoutProvider, SafeAreaProvider]}>
+        <CustomStatusBar />
+        <Root />
+      </ComposeProviders>
+    </GestureHandlerRootView>
   );
 }
 
