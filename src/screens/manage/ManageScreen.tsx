@@ -1,26 +1,26 @@
 import React from 'react';
-import {SafeAreaView, View, Text} from 'react-native';
+import {SafeAreaView, StatusBar} from 'react-native';
+import SideBar from './sidebar/SideBar';
+import Content from './content/Content';
 
 const ManageScreen = () => {
   return (
-    <SafeAreaView
-      style={{
-        flex: 1,
-      }}>
-      <View
+    <>
+      <StatusBar
+        animated={true}
+        backgroundColor="transparent"
+        barStyle={'dark-content'}
+      />
+      <SafeAreaView
         style={{
           flex: 1,
-          marginTop: 24,
+          paddingTop: 24,
+          flexDirection: 'row',
         }}>
-        <View
-          style={{
-            flex: 1,
-            flexDirection: 'row',
-          }}>
-          <Text>dsd</Text>
-        </View>
-      </View>
-    </SafeAreaView>
+        <SideBar />
+        <Content />
+      </SafeAreaView>
+    </>
   );
 };
 
