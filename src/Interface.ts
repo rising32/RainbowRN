@@ -27,3 +27,8 @@ export type IMenu = {
   id: string;
   title: string;
 };
+
+export type IVideo = {
+  id: string;
+  title: string;
+};

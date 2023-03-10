@@ -3,8 +3,9 @@ import {SafeAreaView, View} from 'react-native';
 import Menu from './components/Menu';
 import VideoView from './components/VideoView';
 import Bottom from './components/Bottom';
+import {HomeScreenProp} from '../../navigation/types';
 
-const HomeScreen = () => {
+const HomeScreen = ({navigation}: HomeScreenProp) => {
   return (
     <SafeAreaView
       style={{
@@ -21,7 +22,7 @@ const HomeScreen = () => {
             flex: 1,
             flexDirection: 'row',
           }}>
-          <Menu />
+          <Menu navigation={navigation} />
           <VideoView />
         </View>
         <Bottom />

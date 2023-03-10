@@ -11,10 +11,12 @@ export enum PUBLICSCREENS {
 
 export type AuthenticatedRootStackParamList = {
   home: undefined;
+  manage: undefined;
 };
 
 export enum AUTHENTICATEDSCREENS {
   HOME = 'home',
+  MANAGE = 'manage',
 }
 
 export type LoginScreenProp = StackScreenProps<
@@ -24,4 +26,8 @@ export type LoginScreenProp = StackScreenProps<
 export type SignUpScreenProp = StackScreenProps<
   PublicRootStackParamList,
   PUBLICSCREENS.SIGNUP
+>;
+export type HomeScreenProp = StackScreenProps<
+  AuthenticatedRootStackParamList,
+  AUTHENTICATEDSCREENS.HOME
 >;

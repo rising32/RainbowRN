@@ -1,10 +1,10 @@
 import React, {useState} from 'react';
 import {Text, View, FlatList, Pressable} from 'react-native';
-import {IMenu} from '../../../Interface';
+import {IVideo} from '../../../Interface';
 
 const Bottom = () => {
-  const [selectedVideo, setSelectedVideo] = useState<IMenu | null>(null);
-  const menuList: IMenu[] = [
+  const [selectedVideo, setSelectedVideo] = useState<IVideo | null>(null);
+  const videoList: IVideo[] = [
     {
       id: '0',
       title: 'SPICY RAINBOW ROLL',
@@ -55,7 +55,7 @@ const Bottom = () => {
     },
   ];
 
-  const Item = ({item}: {item: IMenu}) => (
+  const Item = ({item}: {item: IVideo}) => (
     <Pressable
       style={{
         padding: 10,
@@ -104,7 +104,7 @@ const Bottom = () => {
           paddingHorizontal: 12,
         }}>
         <FlatList
-          data={menuList}
+          data={videoList}
           horizontal
           renderItem={({item}) => <Item item={item} />}
           keyExtractor={item => item.id}
