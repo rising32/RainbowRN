@@ -1,9 +1,11 @@
-import React, {useState, useCallback} from 'react';
+import React, {useState, useCallback, useContext} from 'react';
 import {View} from 'react-native';
 import Avatar from '../../../components/Avatar/Avatar';
 import PressableButton from '../../../components/PressableButton/PressableButton';
+import {LayoutContext} from '../../../libs/contexts/LayoutProvider';
 
 const SideBar = () => {
+  const {isLandscape} = useContext(LayoutContext);
   const [isFetching, setIsFetching] = useState(false);
 
   const onPress = useCallback(() => {
@@ -16,7 +18,7 @@ const SideBar = () => {
   return (
     <View
       style={{
-        width: 350,
+        width: isLandscape ? 350 : 200,
         height: '100%',
         backgroundColor: '#495057',
       }}>

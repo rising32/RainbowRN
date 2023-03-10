@@ -1,12 +1,14 @@
-import React from 'react';
+import React, {useContext} from 'react';
 import {View, Text} from 'react-native';
 import PressableButton from '../../../components/PressableButton/PressableButton';
+import {LayoutContext} from '../../../libs/contexts/LayoutProvider';
 
 const VideoContent = () => {
+  const {isLandscape} = useContext(LayoutContext);
   return (
     <View
       style={{
-        width: 500,
+        width: isLandscape ? 500 : 300,
         height: '100%',
         borderTopWidth: 1,
         borderRightWidth: 1,
@@ -61,8 +63,9 @@ const VideoContent = () => {
           <View
             style={{
               width: '90%',
-              height: 200,
+              height: isLandscape ? 200 : 150,
               backgroundColor: '#495057',
+              marginTop: 36,
             }}
           />
           <PressableButton

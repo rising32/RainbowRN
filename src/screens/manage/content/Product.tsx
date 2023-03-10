@@ -59,8 +59,8 @@ const Product = () => {
   const Item = ({item}: {item: IVideo}) => (
     <Pressable
       style={{
-        padding: 5,
-        backgroundColor: item.id === selectedVideo?.id ? '#EBAFAF' : 'white',
+        borderWidth: 5,
+        borderColor: item.id === selectedVideo?.id ? '#EBAFAF' : 'white',
       }}
       onPress={() => setSelectedVideo(item)}>
       <View
@@ -79,8 +79,7 @@ const Product = () => {
             height: 30,
             alignItems: 'center',
             justifyContent: 'center',
-            backgroundColor:
-              item.id === selectedVideo?.id ? '#EBAFAF' : '#495057',
+            backgroundColor: '#495057',
           }}>
           <Text
             style={{
