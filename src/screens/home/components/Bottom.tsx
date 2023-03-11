@@ -58,8 +58,8 @@ const Bottom = () => {
   const Item = ({item}: {item: IVideo}) => (
     <Pressable
       style={{
-        padding: 10,
-        backgroundColor: item.id === selectedVideo?.id ? '#EBAFAF' : 'black',
+        borderWidth: 5,
+        borderColor: item.id === selectedVideo?.id ? '#EBAFAF' : 'black',
       }}
       onPress={() => setSelectedVideo(item)}>
       <View
@@ -74,8 +74,7 @@ const Bottom = () => {
           height: 30,
           alignItems: 'center',
           justifyContent: 'center',
-          backgroundColor:
-            item.id === selectedVideo?.id ? '#EBAFAF' : '#495057',
+          backgroundColor: '#495057',
         }}>
         <Text
           style={{
