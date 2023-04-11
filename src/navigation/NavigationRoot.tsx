@@ -1,6 +1,5 @@
 import {NavigationContainer} from '@react-navigation/native';
 import React from 'react';
-import FullScreenLoadingIndicator from '../components/FullScreenLoadingIndicator';
 import AppNavigator from './AppNavigator';
 
 type Props = {
@@ -9,11 +8,7 @@ type Props = {
 
 const NavigationRoot = ({onReady}: Props) => {
   return (
-    <NavigationContainer
-      fallback={
-        <FullScreenLoadingIndicator loadingText="Navigation Fallback Loader" />
-      }
-      onReady={onReady}>
+    <NavigationContainer onReady={onReady}>
       <AppNavigator />
     </NavigationContainer>
   );

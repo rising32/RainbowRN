@@ -1,14 +1,12 @@
-import React, {createContext, useEffect, useState} from 'react';
-import {Appearance} from 'react-native';
-import {IUser, ThemeContextType, DefaultUser} from '../../Interface';
+import React from 'react';
 
-type UserContextType = {
-  currentUser: IUser;
-  setCurrentUser: React.Dispatch<React.SetStateAction<IUser>>;
+type AppContextType = {
+  defaultURL: string;
+  changeDefaultURL: (url: string) => void;
 };
-const ThemeContext = createContext<ThemeContextType>('light');
-export const CurrentUserContext = createContext<UserContextType>(
-  {} as UserContextType,
+
+export const AppContext = React.createContext<AppContextType>(
+  {} as AppContextType,
 );
 
 type Props = {
@@ -16,28 +14,16 @@ type Props = {
 };
 
 function AppProvider({children}: Props) {
-  const [theme, updateTheme] = useState<ThemeContextType>('light');
-  const [currentUser, setCurrentUser] = useState<IUser>(DefaultUser);
+  const [defaultURL, setDefaultURL] = React.useState('http://18.217.36.36');
 
-  useEffect(() => {
-    const mode = Appearance.getColorScheme();
-    mode ? updateTheme(mode) : updateTheme('light');
-
-    Appearance.addChangeListener(({colorScheme}) => {
-      colorScheme ? updateTheme(colorScheme) : null;
-    });
-  }, []);
+  const changeDefaultURL = (url: string) => {
+    setDefaultURL(url);
+  };
 
   return (
-    <ThemeContext.Provider value={theme}>
-      <CurrentUserContext.Provider
-        value={{
-          currentUser,
-          setCurrentUser,
-        }}>
-        {children}
-      </CurrentUserContext.Provider>
-    </ThemeContext.Provider>
+    <AppContext.Provider value={{defaultURL, changeDefaultURL}}>
+      {children}
+    </AppContext.Provider>
   );
 }
 

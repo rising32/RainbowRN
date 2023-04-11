@@ -1,4 +1,4 @@
-const ANDROID_PACKAGE_NAME = 'com.eve';
+const ANDROID_PACKAGE_NAME = 'com.rlm';
 
 const CONST = {
   ANDROID_PACKAGE_NAME,
@@ -16,14 +16,6 @@ const CONST = {
     STAGING: 'staging',
     PRODUCTION: 'production',
   },
-  NETWORK: {
-    METHOD: {
-      POST: 'post',
-    },
-    MAX_REQUEST_RETRIES: 10,
-    PROCESS_REQUEST_DELAY_MS: 1000,
-    MAX_PENDING_TIME_MS: 10 * 1000,
-  },
   APP_STATE: {
     ACTIVE: 'active',
     BACKGROUND: 'background',
@@ -35,10 +27,6 @@ const CONST = {
     DECIMAL_PAD: 'decimal-pad',
     VISIBLE_PASSWORD: 'visible-password',
     EMAIL_ADDRESS: 'email-address',
-  },
-  BASIC_DIMENSION: {
-    WIDTH: 1780,
-    HEIGHT: 1087,
   },
 };
 

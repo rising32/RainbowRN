@@ -1,22 +1,30 @@
 import React from 'react';
 import {AUTHENTICATEDSCREENS, AuthenticatedRootStackParamList} from '../types';
-import {createStackNavigator, TransitionPresets} from '@react-navigation/stack';
-import HomeScreen from '../../screens/home/HomeScreen';
-import ManageScreen from '../../screens/manage/ManageScreen';
+import {createStackNavigator} from '@react-navigation/stack';
+import DrawerNavigator from './DrawerNavigator';
+import EditCalibrationScreen from '../../screens/home/EditCalibrationScreen';
+import EditInspectionScreen from '../../screens/home/EditInspectionScreen';
 
 const AuthStack = createStackNavigator<AuthenticatedRootStackParamList>();
 
 const AuthScreens = () => (
-  <AuthStack.Navigator
-    initialRouteName={AUTHENTICATEDSCREENS.HOME}
-    screenOptions={{
-      headerShown: false,
-      ...TransitionPresets.SlideFromRightIOS,
-    }}>
-    <AuthStack.Screen name={AUTHENTICATEDSCREENS.HOME} component={HomeScreen} />
+  <AuthStack.Navigator initialRouteName={AUTHENTICATEDSCREENS.MAIN}>
     <AuthStack.Screen
-      name={AUTHENTICATEDSCREENS.MANAGE}
-      component={ManageScreen}
+      name={AUTHENTICATEDSCREENS.MAIN}
+      component={DrawerNavigator}
+      options={{headerShown: false}}
+    />
+    <AuthStack.Screen
+      name={AUTHENTICATEDSCREENS.EDITCALIBRATION}
+      component={EditCalibrationScreen}
+      // options={{headerShown: false}}
+      options={({route}) => ({title: route.params.title})}
+    />
+    <AuthStack.Screen
+      name={AUTHENTICATEDSCREENS.EDITINSPECTION}
+      component={EditInspectionScreen}
+      // options={{headerShown: false}}
+      options={({route}) => ({title: route.params.title})}
     />
   </AuthStack.Navigator>
 );

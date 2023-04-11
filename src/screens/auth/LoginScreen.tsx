@@ -1,57 +1,150 @@
-import React, {useCallback, useState, useContext} from 'react';
-import {SafeAreaView, View} from 'react-native';
-import KeyboardAvoidingComponent from '../../components/KeyboardAvoidingComponent';
-import TextInput from '../../components/TextInput/TextInput';
-import Avatar from '../../components/Avatar/Avatar';
-import PressableButton from '../../components/PressableButton/PressableButton';
-import {CurrentUserContext} from '../../libs/contexts/AppProvider';
+import React from 'react';
+import {
+  SafeAreaView,
+  Text,
+  TextInput,
+  View,
+  Image,
+  Pressable,
+  Keyboard,
+  ActivityIndicator,
+} from 'react-native';
+import {LogoImg} from '../../assets/images';
+import {EyeOffSVG, EyeSVG, PasswordSVG, UserSVG} from '../../components/Icons';
+import useAuth from './hooks/useAuth';
+import CryptoJS from 'react-native-crypto-js';
+import Config from 'react-native-config';
+
+export type LoginForm = {
+  userName: string;
+  password: string;
+  device: 'mobile' | 'web';
+};
 
 const LoginScreen = () => {
-  const [isFetching, setIsFetching] = useState(false);
-  const {setCurrentUser} = useContext(CurrentUserContext);
+  const [username, setUsername] = React.useState('');
+  const [password, setPassword] = React.useState('');
+  const [passwordVisibility, setPasswordVisibility] = React.useState(true);
 
-  const onPress = useCallback(() => {
-    setIsFetching(true);
-    setTimeout(() => {
-      setCurrentUser({
-        id: '123456',
-        username: 'rainbow',
-        role: 'user',
+  const {loading, error, reset, onLogin} = useAuth();
+
+  const onChangeUsername = (text: string) => {
+    reset();
+    setUsername(text);
+  };
+  const onChangePassword = (text: string) => {
+    reset();
+    setPassword(text);
+  };
+
+  const onSubmit = React.useCallback(async () => {
+    Keyboard.dismiss();
+    if (Config.CRYPTO_SECRET_KEY) {
+      const cryptoPassword = CryptoJS.AES.encrypt(
+        password,
+        Config.CRYPTO_SECRET_KEY,
+      ).toString();
+      onLogin({
+        userName: username,
+        password: cryptoPassword,
+        device: 'mobile',
       });
-      setIsFetching(false);
-    }, 3000);
-  }, [setCurrentUser]);
+    }
+  }, [onLogin, password, username]);
+
   return (
     <SafeAreaView
       style={{
         flex: 1,
+        backgroundColor: 'white',
         alignItems: 'center',
         justifyContent: 'center',
         rowGap: 20,
-        backgroundColor: '#FF50B9',
       }}>
-      <KeyboardAvoidingComponent
-        additionalStyle={{
+      <Image source={LogoImg} style={{width: 170, height: 161}} />
+      <View
+        style={{
+          flexDirection: 'row',
           alignItems: 'center',
-          justifyContent: 'center',
-          alignContent: 'center',
+          marginHorizontal: 50,
         }}>
-        <View
+        <UserSVG height={32} width={32} />
+        <TextInput
           style={{
-            width: 320,
-            rowGap: 36,
+            flex: 1,
+            borderBottomWidth: 1,
+            borderBottomColor: 'gray',
+            padding: 10,
+            fontSize: 20,
+            marginLeft: 15,
+          }}
+          onChangeText={onChangeUsername}
+          value={username}
+          placeholder="Username"
+          placeholderTextColor="gray"
+        />
+      </View>
+      <View
+        style={{
+          flexDirection: 'row',
+          alignItems: 'center',
+          marginHorizontal: 50,
+        }}>
+        <PasswordSVG height={32} width={32} />
+        <TextInput
+          style={{
+            flex: 1,
+            borderBottomWidth: 1,
+            borderBottomColor: 'gray',
+            padding: 10,
+            fontSize: 20,
+            marginLeft: 15,
+          }}
+          onChangeText={onChangePassword}
+          value={password}
+          placeholder="Password"
+          secureTextEntry={passwordVisibility}
+        />
+        <Pressable
+          style={{
+            position: 'absolute',
+            right: 0,
+          }}
+          onPress={() => setPasswordVisibility(!passwordVisibility)}>
+          {passwordVisibility ? (
+            <EyeSVG height={32} width={32} />
+          ) : (
+            <EyeOffSVG height={32} width={32} />
+          )}
+        </Pressable>
+      </View>
+      {error && (
+        <Text style={{textAlign: 'center', color: 'red'}}>{error}</Text>
+      )}
+      <View
+        style={{
+          flexDirection: 'row',
+          alignItems: 'center',
+          marginHorizontal: 50,
+        }}>
+        <Pressable
+          style={{
+            backgroundColor: 'red',
+            width: '100%',
+            height: 50,
+            borderRadius: 50,
+            marginTop: 20,
             alignItems: 'center',
-          }}>
-          <Avatar width={200} />
-          <TextInput placeholder="Username" />
-          <TextInput placeholder="Password" />
-          <PressableButton
-            text="Login"
-            onPress={onPress}
-            isFetching={isFetching}
-          />
-        </View>
-      </KeyboardAvoidingComponent>
+            justifyContent: 'center',
+          }}
+          onPress={onSubmit}>
+          {loading ? (
+            <ActivityIndicator size="large" color="white" />
+          ) : (
+            <Text style={{color: 'white', fontSize: 20}}>Login</Text>
+          )}
+        </Pressable>
+      </View>
     </SafeAreaView>
   );
 };

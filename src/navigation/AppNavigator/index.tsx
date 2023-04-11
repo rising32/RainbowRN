@@ -1,11 +1,12 @@
-import React, {useContext} from 'react';
+import React from 'react';
 import PublicScreens from './PublicScreens';
-import {CurrentUserContext} from '../../libs/contexts/AppProvider';
 import AuthScreens from './AuthScreens';
+import {useRecoilValue} from 'recoil';
+import {userState} from '../../recoil/atoms';
 
 const AppNavigator = () => {
-  const {currentUser} = useContext(CurrentUserContext);
-  if (currentUser.role !== 'guest') {
+  const user = useRecoilValue(userState);
+  if (user) {
     return <AuthScreens />;
   }
   return <PublicScreens />;

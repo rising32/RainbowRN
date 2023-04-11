@@ -1,37 +1,37 @@
-import React, {useContext} from 'react';
-import {View, ViewProps, ViewStyle} from 'react-native';
-import {CurrentUserContext} from '../../libs/contexts/AppProvider';
-import Image from '../Image/Image';
+import React from 'react';
+import {Pressable, Image} from 'react-native';
+import {UserSVG} from '../Icons';
+import {useRecoilValue} from 'recoil';
+import {userState} from '../../recoil/atoms';
 
-interface Props extends ViewProps {
+type Props = {
   width: number;
-  style?: ViewStyle;
-}
+  onSelectAvatar?: () => void;
+};
 
-const Avatar = ({width = 200, style}: Props) => {
-  const {currentUser} = useContext(CurrentUserContext);
+const Avatar = ({width, onSelectAvatar}: Props) => {
+  const user = useRecoilValue(userState);
 
   return (
-    <View
-      style={[
-        {
-          width: width,
-          height: width,
-          borderRadius: width,
-          backgroundColor: 'black',
-        },
-        style,
-      ]}>
-      {currentUser.role === 'guest' ? null : (
+    <Pressable
+      style={{
+        width: width,
+        height: width,
+        borderRadius: width,
+        backgroundColor: '#e4e6e7',
+        alignItems: 'center',
+        justifyContent: 'center',
+      }}
+      onPress={onSelectAvatar}>
+      {user?.photoUrl ? (
         <Image
-          source={{
-            uri: 'https://unsplash.it/400/400?image=1',
-          }}
-          width={width}
-          isRound
+          source={{uri: user.photoUrl}}
+          style={{width: width, height: width, borderRadius: width}}
         />
+      ) : (
+        <UserSVG height={width * 0.8} width={width * 0.8} />
       )}
-    </View>
+    </Pressable>
   );
 };
 
