@@ -35,7 +35,12 @@ const CalibrationItem = ({item, index}: Props) => {
   }, [item.caliStatus]);
 
   const instrument = React.useMemo(() => {
-    if (instrumentRLM.length > 0 && instrumentMPT.length > 0) {
+    if (
+      instrumentRLM.length > 0 &&
+      instrumentMPT.length > 0 &&
+      item.caliInstrumentSN < instrumentMPT.length &&
+      item.caliInstrumentSN < instrumentRLM.length
+    ) {
       if (item.caliInstrumentSNType === 'RLM') {
         return instrumentRLM[item.caliInstrumentSN].instrumentName;
       }

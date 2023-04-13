@@ -6,22 +6,22 @@ import {
 import {DrawerScreenProps} from '@react-navigation/drawer';
 import {ICalibration, IInspection, InspectionStatus} from '../recoil/interface';
 
-export type PublicRootStackParamList = {
+export type PublicStackParamList = {
   Login: undefined;
 };
 export enum PUBLICSCREENS {
   LOGIN = 'Login',
 }
 
-export type AuthenticatedRootStackParamList = {
+export type AuthenticatedStackParamList = {
   Main: NavigatorScreenParams<DrawerParamList>;
   EditCalibration: {item: ICalibration | null; title: string};
   EditInspection: {item: IInspection; status: InspectionStatus; title: string};
   Camera: undefined;
 };
-export type AuthenticatedRootStackScreenProps<
-  T extends keyof AuthenticatedRootStackParamList,
-> = StackScreenProps<AuthenticatedRootStackParamList, T>;
+export type AuthenticatedStackScreenProps<
+  T extends keyof AuthenticatedStackParamList,
+> = StackScreenProps<AuthenticatedStackParamList, T>;
 
 export enum AUTHENTICATEDSCREENS {
   MAIN = 'Main',
@@ -41,7 +41,7 @@ export type DrawerParamList = {
 export type AppDrawerScreenProps<T extends keyof DrawerParamList> =
   CompositeScreenProps<
     DrawerScreenProps<DrawerParamList, T>,
-    AuthenticatedRootStackScreenProps<keyof AuthenticatedRootStackParamList>
+    AuthenticatedStackScreenProps<keyof AuthenticatedStackParamList>
   >;
 
 export enum DRAWERSCREENS {
@@ -53,16 +53,16 @@ export enum DRAWERSCREENS {
 }
 
 export type LoginScreenProp = StackScreenProps<
-  PublicRootStackParamList,
+  PublicStackParamList,
   PUBLICSCREENS.LOGIN
 >;
 export type CameraScreenProp = StackScreenProps<
-  AuthenticatedRootStackParamList,
+  AuthenticatedStackParamList,
   AUTHENTICATEDSCREENS.CAMERA
 >;
 
 declare global {
   namespace ReactNavigation {
-    interface RootParamList extends AuthenticatedRootStackParamList {}
+    interface RootParamList extends AuthenticatedStackParamList {}
   }
 }

@@ -1,4 +1,4 @@
-import React, {useState, useCallback, useMemo, useEffect} from 'react';
+import React, {useState, useCallback, useEffect} from 'react';
 import {
   Text,
   Pressable,
@@ -10,23 +10,22 @@ import {
   ScrollView,
 } from 'react-native';
 import {Picker} from '@react-native-picker/picker';
-import {format} from 'date-fns';
 import {AppContext} from '../../libs/contexts/AppProvider';
 import {useRecoilValue} from 'recoil';
 import {instrumentState, userState} from '../../recoil/atoms';
 import {
   AUTHENTICATEDSCREENS,
-  AuthenticatedRootStackScreenProps,
+  AuthenticatedStackScreenProps,
 } from '../../navigation/types';
 import {request} from '../../utils';
 import PhotoItem from '../../components/PhotoItem/PhotoItem';
+import useCalibrationItem from './hooks/useCalibrationItem';
 
 const EditCalibrationScreen = ({
   route,
   navigation,
-}: AuthenticatedRootStackScreenProps<AUTHENTICATEDSCREENS.EDITCALIBRATION>) => {
+}: AuthenticatedStackScreenProps<AUTHENTICATEDSCREENS.EDITCALIBRATION>) => {
   const item = route.params.item;
-  const [caliDate, setCaliDate] = useState<Date | null>(null);
   const [instrumentSN, setInstrumentSN] = useState<number | null>(null);
   const [rmlReading, setRmlReading] = useState('');
   const [mptForce, setMptForce] = useState('');
@@ -34,27 +33,32 @@ const EditCalibrationScreen = ({
   const [loading, setLoading] = useState(false);
   const [errorText, setErrorText] = useState('');
   const {instrumentRLM, instrumentMPT} = useRecoilValue(instrumentState);
-  const [selectedRLMValue, setSelectedRLMValue] = useState('');
+  const [selectedInstrumentValue, setSelectedInstrumentRLMValue] = useState('');
 
   const {defaultURL} = React.useContext(AppContext);
   const user = useRecoilValue(userState);
+  const {dateString, timeString} = useCalibrationItem();
 
   useEffect(() => {
     if (item) {
-      setCaliDate(new Date(item.caliDate));
       setRmlReading(item.caliRLMReading);
       setMptForce(item.caliMPTForce || '');
       setCaliPhoto(item.caliPhoto);
 
-      console.log(item);
-      if (item.caliInstrumentSNType === 'RLM') {
+      if (
+        item.caliInstrumentSNType === 'RLM' &&
+        item.caliInstrumentSN < instrumentRLM.length
+      ) {
         setInstrumentSN(item.caliInstrumentSN);
-        setSelectedRLMValue(
+        setSelectedInstrumentRLMValue(
           instrumentRLM[item.caliInstrumentSN].instrumentName,
         );
-      } else if (item.caliInstrumentSNType === 'MPT') {
+      } else if (
+        item.caliInstrumentSNType === 'MPT' &&
+        item.caliInstrumentSN < instrumentMPT.length
+      ) {
         setInstrumentSN(item.caliInstrumentSN + 4);
-        setSelectedRLMValue(
+        setSelectedInstrumentRLMValue(
           instrumentMPT[item.caliInstrumentSN].instrumentName,
         );
       }
@@ -62,15 +66,6 @@ const EditCalibrationScreen = ({
       resetForm();
     }
   }, [instrumentMPT, instrumentRLM, item]);
-
-  const dateString = useMemo(
-    () => (caliDate ? format(caliDate, 'yyyy-MM-dd') : ''),
-    [caliDate],
-  );
-  const timeString = useMemo(
-    () => (caliDate ? format(caliDate, 'kk:mm:ss') : ''),
-    [caliDate],
-  );
 
   const onChangeRmlReading = (text: string) => {
     setRmlReading(text);
@@ -81,7 +76,6 @@ const EditCalibrationScreen = ({
     setErrorText('');
   };
   const resetForm = () => {
-    setCaliDate(new Date());
     setInstrumentSN(null);
     setRmlReading('');
     setMptForce('');
@@ -130,7 +124,7 @@ const EditCalibrationScreen = ({
 
       const instrumentRLMNum = instrumentRLM.length;
       let formData = {
-        caliDate,
+        // caliDate,
         caliInstrumentSN:
           instrumentSN > instrumentRLMNum - 1
             ? instrumentSN - instrumentRLMNum
@@ -211,7 +205,6 @@ const EditCalibrationScreen = ({
     user?.firstName,
     user?.lastName,
     instrumentRLM,
-    caliDate,
     caliPhoto,
     item,
     defaultURL,
@@ -266,12 +259,14 @@ const EditCalibrationScreen = ({
           </View>
           <View style={[{height: 54, borderWidth: 1, borderRadius: 5}]}>
             <Picker
-              selectedValue={selectedRLMValue}
+              selectedValue={selectedInstrumentValue}
+              placeholder=""
               onValueChange={(itemValue, itemIndex) => {
                 console.log(itemValue, itemIndex);
-                setSelectedRLMValue(itemValue);
+                setSelectedInstrumentRLMValue(itemValue);
                 selectInstrument(itemIndex);
               }}>
+              <Picker.Item label={'Select'} value={'Select'} />
               {instrumentRLM.map(rlm => (
                 <Picker.Item
                   key={rlm.instrumentType}
@@ -279,7 +274,9 @@ const EditCalibrationScreen = ({
                   value={rlm.instrumentName}
                   style={{
                     color:
-                      selectedRLMValue === rlm.instrumentName ? 'red' : 'black',
+                      selectedInstrumentValue === rlm.instrumentName
+                        ? 'red'
+                        : 'black',
                   }}
                 />
               ))}
@@ -288,6 +285,12 @@ const EditCalibrationScreen = ({
                   key={rlm.instrumentType}
                   label={rlm.instrumentName}
                   value={rlm.instrumentName}
+                  style={{
+                    color:
+                      selectedInstrumentValue === rlm.instrumentName
+                        ? 'red'
+                        : 'black',
+                  }}
                 />
               ))}
             </Picker>

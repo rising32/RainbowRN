@@ -1,9 +1,9 @@
 import React from 'react';
-import {PUBLICSCREENS, PublicRootStackParamList} from '../types';
+import {PUBLICSCREENS, PublicStackParamList} from '../types';
 import {createStackNavigator, TransitionPresets} from '@react-navigation/stack';
 import LoginScreen from '../../screens/auth/LoginScreen';
 
-const PublicStack = createStackNavigator<PublicRootStackParamList>();
+const PublicStack = createStackNavigator<PublicStackParamList>();
 
 const PublicScreens = () => (
   <PublicStack.Navigator

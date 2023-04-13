@@ -1,11 +1,11 @@
 import React from 'react';
-import {AUTHENTICATEDSCREENS, AuthenticatedRootStackParamList} from '../types';
+import {AUTHENTICATEDSCREENS, AuthenticatedStackParamList} from '../types';
 import {createStackNavigator} from '@react-navigation/stack';
 import DrawerNavigator from './DrawerNavigator';
 import EditCalibrationScreen from '../../screens/home/EditCalibrationScreen';
 import EditInspectionScreen from '../../screens/home/EditInspectionScreen';
 
-const AuthStack = createStackNavigator<AuthenticatedRootStackParamList>();
+const AuthStack = createStackNavigator<AuthenticatedStackParamList>();
 
 const AuthScreens = () => (
   <AuthStack.Navigator initialRouteName={AUTHENTICATEDSCREENS.MAIN}>
