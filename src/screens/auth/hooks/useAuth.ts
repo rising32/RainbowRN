@@ -29,7 +29,6 @@ export default function useAuth() {
     }
     try {
       setLoading(true);
-      console.log(`${defaultURL}/api/auth`);
       const userInfo = await request<IUser>(`${defaultURL}/api/auth`, {
         method: 'POST',
         headers: {

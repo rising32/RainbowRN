@@ -16,9 +16,9 @@ export type ICalibration = {
   caliDate: string;
   caliInstrumentSN: number;
   caliInstrumentSNType: SNType;
-  caliRLMReading: string;
+  caliRLMReading?: string;
   caliMPTForce?: string;
-  caliPhoto: string;
+  caliPhoto?: string;
   caliInspector: string;
   caliInspectorName: string;
   caliStatus: number;

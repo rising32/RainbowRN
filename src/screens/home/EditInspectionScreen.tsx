@@ -24,7 +24,7 @@ import {
 import Geolocation from '@react-native-community/geolocation';
 import {
   AUTHENTICATEDSCREENS,
-  AuthenticatedRootStackScreenProps,
+  AuthenticatedStackScreenProps,
 } from '../../navigation/types';
 import {Picker} from '@react-native-picker/picker';
 import PhotoItem from '../../components/PhotoItem/PhotoItem';
@@ -42,7 +42,7 @@ type PhotoKind =
 const EditInspectionScreen = ({
   route,
   navigation,
-}: AuthenticatedRootStackScreenProps<AUTHENTICATEDSCREENS.EDITINSPECTION>) => {
+}: AuthenticatedStackScreenProps<AUTHENTICATEDSCREENS.EDITINSPECTION>) => {
   const item = route.params.item;
   const status = route.params.status;
   const [loading, setLoading] = useState(false);

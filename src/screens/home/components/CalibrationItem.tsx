@@ -35,16 +35,17 @@ const CalibrationItem = ({item, index}: Props) => {
   }, [item.caliStatus]);
 
   const instrument = React.useMemo(() => {
-    if (
-      instrumentRLM.length > 0 &&
-      instrumentMPT.length > 0 &&
-      item.caliInstrumentSN < instrumentMPT.length &&
-      item.caliInstrumentSN < instrumentRLM.length
-    ) {
-      if (item.caliInstrumentSNType === 'RLM') {
+    if (instrumentRLM.length > 0 && instrumentMPT.length > 0) {
+      if (
+        item.caliInstrumentSNType === 'RLM' &&
+        item.caliInstrumentSN < instrumentRLM.length
+      ) {
         return instrumentRLM[item.caliInstrumentSN].instrumentName;
       }
-      if (item.caliInstrumentSNType === 'MPT') {
+      if (
+        item.caliInstrumentSNType === 'MPT' &&
+        item.caliInstrumentSN < instrumentMPT.length
+      ) {
         return instrumentMPT[item.caliInstrumentSN].instrumentName;
       }
     }
@@ -115,7 +116,12 @@ const CalibrationItem = ({item, index}: Props) => {
       </View>
       <View
         style={{width: 100, alignItems: 'center', justifyContent: 'center'}}>
-        <Text style={{textAlign: 'center', fontSize: 14, color: 'dodgerblue'}}>
+        <Text
+          style={{
+            textAlign: 'center',
+            fontSize: 14,
+            color: item.caliStatus === 2 ? 'red' : 'dodgerblue',
+          }}>
           {result}
         </Text>
       </View>

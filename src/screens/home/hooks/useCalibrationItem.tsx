@@ -1,13 +1,16 @@
-import {useRoute} from '@react-navigation/native';
+import {useNavigation, useRoute} from '@react-navigation/native';
 import {
   AUTHENTICATEDSCREENS,
   AuthenticatedStackScreenProps,
 } from '../../../navigation/types';
 import React from 'react';
+import {Keyboard} from 'react-native';
 import {ICalibration} from '../../../recoil/interface';
 import {format} from 'date-fns';
 import {useRecoilValue} from 'recoil';
-import {instrumentState} from '../../../recoil/atoms';
+import {instrumentState, userState} from '../../../recoil/atoms';
+import {AppContext} from '../../../libs/contexts/AppProvider';
+import {request} from '../../../utils';
 
 export type CalibrationEditModel = {
   dateString: string;
@@ -24,52 +27,256 @@ export default function useCalibrationItem() {
   const [calibration, setCalibration] = React.useState<ICalibration | null>(
     null,
   );
+  const [date, setDate] = React.useState<Date>(new Date());
+  const [instrumentSN, setInstrumentSN] = React.useState(0);
+  const [instrumentValue, setInstrumentValue] = React.useState('');
+  const [rmlReading, setRmlReading] = React.useState('');
+  const [mptForce, setMptForce] = React.useState('');
+  const [photoURI, setPhotoURI] = React.useState<string | null>(null);
+
+  const navigation =
+    useNavigation<
+      AuthenticatedStackScreenProps<AUTHENTICATEDSCREENS.EDITCALIBRATION>['navigation']
+    >();
   const route =
     useRoute<
       AuthenticatedStackScreenProps<AUTHENTICATEDSCREENS.EDITCALIBRATION>['route']
     >();
 
   const {instrumentRLM, instrumentMPT} = useRecoilValue(instrumentState);
+  const {defaultURL} = React.useContext(AppContext);
+  const user = useRecoilValue(userState);
 
   React.useEffect(() => {
     if (route.params.item) {
       setLoading(false);
       setCalibration(route.params.item);
+      setInstrumentSN(route.params.item.caliInstrumentSN + 1);
     }
   }, [route]);
+  React.useEffect(() => {
+    if (calibration && instrumentRLM.length > 0 && instrumentMPT.length > 0) {
+      if (
+        calibration.caliInstrumentSNType === 'RLM' &&
+        calibration.caliInstrumentSN < instrumentRLM.length
+      ) {
+        setInstrumentSN(calibration.caliInstrumentSN + 1);
+        setInstrumentValue(
+          instrumentRLM[calibration.caliInstrumentSN].instrumentName,
+        );
+        setRmlReading(calibration.caliRLMReading || '');
+      }
+      if (
+        calibration.caliInstrumentSNType === 'MPT' &&
+        instrumentRLM.length > 0 &&
+        calibration.caliInstrumentSN < instrumentMPT.length
+      ) {
+        setInstrumentSN(
+          calibration.caliInstrumentSN + instrumentRLM.length + 1,
+        );
+        setInstrumentValue(
+          instrumentMPT[calibration.caliInstrumentSN].instrumentName,
+        );
+        setMptForce(calibration.caliMPTForce || '');
+      }
+    }
+  }, [calibration, instrumentRLM, instrumentMPT]);
+  React.useEffect(() => {
+    if (calibration?.caliPhoto) {
+      setPhotoURI(calibration.caliPhoto);
+    }
+  }, [calibration]);
+  React.useEffect(() => {
+    if (calibration?.caliDate) {
+      setDate(new Date(calibration.caliDate));
+    } else {
+      setDate(new Date());
+    }
+  }, [calibration]);
 
-  const dateString = React.useMemo(
+  const instrumentPickerList = React.useMemo(() => {
+    let rlm: string[] = [];
+    let mpt: string[] = [];
+    if (instrumentRLM.length > 0) {
+      rlm = instrumentRLM.map(element => element.instrumentName);
+    }
+    if (instrumentMPT.length > 0) {
+      mpt = instrumentMPT.map(element => element.instrumentName);
+    }
+    return [...rlm, ...mpt];
+  }, [instrumentRLM, instrumentMPT]);
+  const dateString = React.useMemo(() => format(date, 'yyyy-MM-dd'), [date]);
+  const timeString = React.useMemo(() => format(date, 'kk:mm:ss'), [date]);
+
+  const changeInstrument = (value: string, index: number) => {
+    setInstrumentValue(value);
+    setInstrumentSN(index);
+
+    if (index <= instrumentRLM.length) {
+      setMptForce('');
+    } else {
+      setRmlReading('');
+    }
+  };
+
+  const visibleRLS = React.useMemo(
     () =>
-      format(
-        new Date(
-          calibration?.caliDate ? new Date(calibration?.caliDate) : new Date(),
-        ),
-        'yyyy-MM-dd',
-      ),
-    [calibration?.caliDate],
+      instrumentRLM &&
+      instrumentSN !== 0 &&
+      instrumentSN <= instrumentRLM.length,
+    [instrumentRLM, instrumentSN],
   );
-  const timeString = React.useMemo(
+  const visibleMPT = React.useMemo(
     () =>
-      format(
-        new Date(
-          calibration?.caliDate ? new Date(calibration?.caliDate) : new Date(),
-        ),
-        'kk:mm:ss',
-      ),
-    [calibration?.caliDate],
+      instrumentMPT &&
+      instrumentSN !== 0 &&
+      instrumentSN > instrumentRLM.length &&
+      instrumentSN <= instrumentRLM.length + instrumentMPT.length,
+    [instrumentMPT, instrumentRLM, instrumentSN],
   );
 
-  const item: CalibrationEditModel = React.useMemo(() => {
-    return {
-      dateString,
-      timeString,
-      instrumentString: 'ddd',
-      rlsString: 'ddd',
-      visibleRLS: false,
-      mptString: 'dsdfdfs',
-      visibleMPT: false,
-    };
-  }, [dateString, timeString]);
+  const onChangeRmlReading = (text: string) => {
+    setRmlReading(text);
+    setError('');
+  };
+  const onChangeMptForce = (text: string) => {
+    setMptForce(text);
+    setError('');
+  };
+  const reset = () => {
+    setInstrumentSN(0);
+    setRmlReading('');
+    setMptForce('');
+  };
+  const onChangePhoto = (photo: string | null) => {
+    setPhotoURI(photo);
+  };
+  const onCreateOrSave = async () => {
+    if (instrumentSN === 0) {
+      setError('Instrument is required.');
+      return;
+    }
+    if (!user?._id) {
+      return;
+    }
+    if (instrumentSN <= instrumentRLM.length) {
+      if (!rmlReading) {
+        setError('RML is required.');
+        return;
+      }
+      if (isNaN(parseInt(rmlReading, 10))) {
+        setError('RML must be number.');
+        return;
+      }
+      if (parseInt(rmlReading, 10) > 0) {
+        setError('RML must be less than zero.');
+        return;
+      }
+    } else {
+      if (!mptForce) {
+        setError('MPT is required.');
+        return;
+      }
+      if (isNaN(parseInt(mptForce, 10))) {
+        setError('MPT must be number.');
+        return;
+      }
+      if (parseInt(mptForce, 10) < 0) {
+        setError('MPT must be greater than zero.');
+        return;
+      }
+    }
 
-  return {loading, error, item, dateString, timeString};
+    try {
+      Keyboard.dismiss();
+      setError('');
+      setLoading(true);
+
+      const instrumentRLMNum = instrumentRLM.length;
+      let params = {
+        userId: user._id,
+        caliDate: date,
+        caliInstrumentSN:
+          instrumentSN > instrumentRLMNum
+            ? instrumentSN - instrumentRLMNum - 1
+            : instrumentSN - 1,
+        caliInstrumentSNType: instrumentSN > instrumentRLMNum ? 'MPT' : 'RLM',
+        caliRLMReading: rmlReading,
+        caliMPTForce: mptForce,
+        caliInspector: user._id,
+        caliInspectorName: user.firstName + ' ' + user.lastName,
+      };
+
+      console.log(instrumentSN, instrumentRLMNum);
+      if (instrumentSN <= instrumentRLMNum) {
+        const value = instrumentRLM[instrumentSN - 1];
+        const max = Math.max(value.instrumentFrom, value.instrumentTo);
+        const min = Math.min(value.instrumentFrom, value.instrumentTo);
+        if (min < parseInt(rmlReading, 10) && parseInt(rmlReading, 10) < max) {
+          params = Object.assign(params, {caliStatus: 1});
+        } else {
+          params = Object.assign(params, {caliStatus: 2});
+        }
+      } else {
+        const value = instrumentMPT[instrumentSN - instrumentRLMNum - 1];
+        const max = Math.max(value.instrumentFrom, value.instrumentTo);
+        const min = Math.min(value.instrumentFrom, value.instrumentTo);
+        if (min < parseInt(rmlReading, 10) && parseInt(rmlReading, 10) < max) {
+          params = Object.assign(params, {caliStatus: 1});
+        } else {
+          params = Object.assign(params, {caliStatus: 2});
+        }
+      }
+      if (photoURI) {
+        params = Object.assign(params, {caliPhoto: photoURI});
+      }
+
+      if (calibration) {
+        await request(`${defaultURL}/api/inscalibration/${calibration._id}`, {
+          method: 'PUT',
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(params),
+        });
+      } else {
+        await request(`${defaultURL}/api/inscalibration`, {
+          method: 'POST',
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(params),
+        });
+      }
+    } catch (err) {
+      console.log(`${defaultURL}/api/inscalibration failed`, err);
+      setError(calibration ? 'save error' : 'create error');
+    } finally {
+      setLoading(false);
+      navigation.goBack();
+    }
+  };
+
+  return {
+    loading,
+    error,
+    dateString,
+    timeString,
+    instrumentPickerList,
+    changeInstrument,
+    instrumentValue,
+    instrumentSN,
+    visibleRLS,
+    visibleMPT,
+    rmlReading,
+    mptForce,
+    onChangeRmlReading,
+    onChangeMptForce,
+    reset,
+    photoURI,
+    onChangePhoto,
+    onCreateOrSave,
+  };
 }
