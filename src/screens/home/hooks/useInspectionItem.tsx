@@ -19,6 +19,7 @@ import Geolocation from '@react-native-community/geolocation';
 import {format} from 'date-fns';
 import {request} from '../../../utils';
 import {AppContext} from '../../../libs/contexts/AppProvider';
+import {Asset} from 'react-native-image-picker';
 
 type PhotoKind =
   | 'id'
@@ -824,6 +825,60 @@ export default function useInspectionItem() {
       navigation.goBack();
     }
   };
+  const pickerImage = async (image: Asset, kind: PhotoKind) => {
+    try {
+      const form = new FormData();
+      form.append('file', {
+        uri: `file://${image.uri}`,
+        name: 'inspection',
+        type: image.type,
+      });
+      form.append('name', 'nuxt-rlm-bucket/inspection-image');
+      form.append('fileType', image.type);
+      const data = await request<{file: string}>(
+        `${defaultURL}/api/awsobjectsinbucket`,
+        {
+          method: 'POST',
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'multipart/form-data',
+          },
+          body: form,
+        },
+      );
+      switch (kind) {
+        case 'id':
+          setPhotosPoleId(data.file);
+          break;
+        case 'label':
+          setPhotosPoleLabel(data.file);
+          break;
+        case 'entire':
+          setPhotosEntirePole(data.file);
+          break;
+        case 'other':
+          setPhotosOther(data.file);
+          break;
+        case 'base1':
+          setPhotosPoleBase1(data.file);
+          break;
+        case 'base2':
+          setPhotosPoleBase2(data.file);
+          break;
+        case 'base3':
+          setPhotosPoleBase3(data.file);
+          break;
+        case 'base4':
+          setPhotosPoleBase4(data.file);
+          break;
+        default:
+          console.log('Sorry, we are out of photo.');
+      }
+    } catch (err) {
+      console.log(`${defaultURL}/api/inscalibration failed`, err);
+      setError('image upload failed');
+    }
+  };
 
   return {
     loading,
@@ -900,5 +955,6 @@ export default function useInspectionItem() {
     photosPoleBase4,
     cancelPhoto,
     onSave,
+    pickerImage,
   };
 }

@@ -11,6 +11,7 @@ import {
 import {Picker} from '@react-native-picker/picker';
 import PhotoItem from '../../components/PhotoItem/PhotoItem';
 import useInspectionItem from './hooks/useInspectionItem';
+import {Asset} from 'react-native-image-picker';
 
 const EditInspectionScreen = () => {
   const {
@@ -86,6 +87,7 @@ const EditInspectionScreen = () => {
     photosPoleBase4,
     cancelPhoto,
     onSave,
+    pickerImage,
   } = useInspectionItem();
 
   return (
@@ -621,7 +623,7 @@ const EditInspectionScreen = () => {
           <PhotoItem
             photoUri={photosPoleId}
             cancelPhoto={() => cancelPhoto('id')}
-            pickerImage={() => {}}
+            pickerImage={(image: Asset) => pickerImage(image, 'id')}
             placeText="Pole ID number confirming right pole tested"
           />
         </View>
@@ -632,7 +634,7 @@ const EditInspectionScreen = () => {
           <PhotoItem
             photoUri={photosPoleLabel}
             cancelPhoto={() => cancelPhoto('label')}
-            pickerImage={() => {}}
+            pickerImage={(image: Asset) => pickerImage(image, 'label')}
             placeText="Label of pole manufacturing information"
           />
         </View>
@@ -643,7 +645,7 @@ const EditInspectionScreen = () => {
           <PhotoItem
             photoUri={photosEntirePole}
             cancelPhoto={() => cancelPhoto('entire')}
-            pickerImage={() => {}}
+            pickerImage={(image: Asset) => pickerImage(image, 'entire')}
             placeText="From pole base to lantern with background"
           />
         </View>
@@ -654,7 +656,7 @@ const EditInspectionScreen = () => {
           <PhotoItem
             photoUri={photosOther}
             cancelPhoto={() => cancelPhoto('other')}
-            pickerImage={() => {}}
+            pickerImage={(image: Asset) => pickerImage(image, 'other')}
             placeText="Only when require for Pole internal by RVI or anti-rust treatment"
           />
         </View>
@@ -665,7 +667,7 @@ const EditInspectionScreen = () => {
           <PhotoItem
             photoUri={photosPoleBase1}
             cancelPhoto={() => cancelPhoto('base1')}
-            pickerImage={() => {}}
+            pickerImage={(image: Asset) => pickerImage(image, 'base1')}
             placeText="Pole base section of about 300mm from ground line, photo taken horizontally"
           />
         </View>
@@ -676,7 +678,7 @@ const EditInspectionScreen = () => {
           <PhotoItem
             photoUri={photosPoleBase2}
             cancelPhoto={() => cancelPhoto('base2')}
-            pickerImage={() => {}}
+            pickerImage={(image: Asset) => pickerImage(image, 'base2')}
             placeText="Pole base section of about 300mm from ground line, photo taken horizontally"
           />
         </View>
@@ -687,7 +689,7 @@ const EditInspectionScreen = () => {
           <PhotoItem
             photoUri={photosPoleBase3}
             cancelPhoto={() => cancelPhoto('base3')}
-            pickerImage={() => {}}
+            pickerImage={(image: Asset) => pickerImage(image, 'base3')}
             placeText="Pole base section of about 300mm from ground line, photo taken horizontally"
           />
         </View>
@@ -698,7 +700,7 @@ const EditInspectionScreen = () => {
           <PhotoItem
             photoUri={photosPoleBase4}
             cancelPhoto={() => cancelPhoto('base4')}
-            pickerImage={() => {}}
+            pickerImage={(image: Asset) => pickerImage(image, 'base4')}
             placeText="Pole base section of about 300mm from ground line, photo taken horizontally"
           />
         </View>

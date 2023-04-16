@@ -30,6 +30,7 @@ const EditCalibrationScreen = () => {
     photoURI,
     onChangePhoto,
     onCreateOrSave,
+    pickerImage,
   } = useCalibrationItem();
 
   return (
@@ -117,7 +118,7 @@ const EditCalibrationScreen = () => {
           <PhotoItem
             photoUri={photoURI}
             cancelPhoto={() => onChangePhoto(null)}
-            pickerImage={() => {}}
+            pickerImage={pickerImage}
           />
         </View>
 

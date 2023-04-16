@@ -6,8 +6,10 @@ import {
   MenuOptions,
   MenuOption,
   MenuTrigger,
+  renderers,
 } from 'react-native-popup-menu';
 import {
+  Asset,
   ImagePickerResponse,
   launchCamera,
   launchImageLibrary,
@@ -16,15 +18,13 @@ import {
 type Props = {
   placeText?: string;
   photoUri: string | null;
-  pickerImage: () => void;
+  pickerImage: (image: Asset) => void;
   cancelPhoto: () => void;
 };
 
+const {SlideInMenu} = renderers;
+
 const PhotoItem = ({placeText, photoUri, pickerImage, cancelPhoto}: Props) => {
-  const [isTouch, setIsTouch] = React.useState(false);
-  const [response, setResponse] = React.useState<ImagePickerResponse | null>(
-    null,
-  );
   const openCamera = React.useCallback(() => {
     launchCamera(
       {
@@ -33,20 +33,38 @@ const PhotoItem = ({placeText, photoUri, pickerImage, cancelPhoto}: Props) => {
         includeBase64: false,
         includeExtra: true,
       },
-      setResponse,
+      ({didCancel, assets}: ImagePickerResponse) => {
+        if (didCancel) {
+          console.log('User cancelled image picker');
+        } else {
+          if (assets && assets.length > 0) {
+            const image = assets[0];
+            pickerImage(image);
+          }
+        }
+      },
     );
-  }, []);
+  }, [pickerImage]);
   const openGallery = React.useCallback(() => {
     launchImageLibrary(
       {
-        selectionLimit: 0,
+        selectionLimit: 1,
         mediaType: 'photo',
         includeBase64: false,
         includeExtra: true,
       },
-      setResponse,
+      ({didCancel, assets}: ImagePickerResponse) => {
+        if (didCancel) {
+          console.log('User cancelled image picker');
+        } else {
+          if (assets && assets.length > 0) {
+            const image = assets[0];
+            pickerImage(image);
+          }
+        }
+      },
     );
-  }, []);
+  }, [pickerImage]);
   return (
     <Pressable
       style={{
@@ -74,15 +92,6 @@ const PhotoItem = ({placeText, photoUri, pickerImage, cancelPhoto}: Props) => {
                 resizeMode: 'contain',
               }}
             />
-            <Pressable
-              style={{
-                position: 'absolute',
-                top: 10,
-                right: 10,
-              }}
-              onPress={cancelPhoto}>
-              <CancelSVG height={36} width={36} stroke="gray" />
-            </Pressable>
           </View>
         ) : (
           <>
@@ -96,7 +105,7 @@ const PhotoItem = ({placeText, photoUri, pickerImage, cancelPhoto}: Props) => {
           </>
         )}
       </View>
-      <Menu onSelect={() => setIsTouch(true)}>
+      <Menu renderer={SlideInMenu}>
         <MenuTrigger
           text=""
           customStyles={{
@@ -106,21 +115,39 @@ const PhotoItem = ({placeText, photoUri, pickerImage, cancelPhoto}: Props) => {
             },
           }}
         />
-        <MenuOptions>
+        <MenuOptions
+          customStyles={{
+            optionsWrapper: {
+              padding: 20,
+              borderWidth: 1,
+              borderColor: 'gray',
+            },
+          }}>
           <MenuOption onSelect={openCamera}>
-            <View style={{flexDirection: 'row', columnGap: 20}}>
+            <View style={{flexDirection: 'row', paddingVertical: 5}}>
               <CameraSVG width={32} height={32} />
-              <Text style={{fontSize: 24}}>Camera</Text>
+              <Text style={{fontSize: 24, marginLeft: 20}}>Camera</Text>
             </View>
           </MenuOption>
           <MenuOption onSelect={openGallery}>
-            <View style={{flexDirection: 'row', columnGap: 20}}>
+            <View style={{flexDirection: 'row', paddingVertical: 5}}>
               <MediaImageSVG width={32} height={32} />
-              <Text style={{fontSize: 24}}>Photos</Text>
+              <Text style={{fontSize: 24, marginLeft: 20}}>Photos</Text>
             </View>
           </MenuOption>
         </MenuOptions>
       </Menu>
+      {photoUri && (
+        <Pressable
+          style={{
+            position: 'absolute',
+            top: 10,
+            right: 10,
+          }}
+          onPress={cancelPhoto}>
+          <CancelSVG height={36} width={36} stroke="gray" />
+        </Pressable>
+      )}
     </Pressable>
   );
 };

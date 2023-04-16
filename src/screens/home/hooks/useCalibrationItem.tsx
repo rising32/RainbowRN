@@ -11,6 +11,7 @@ import {useRecoilValue} from 'recoil';
 import {instrumentState, userState} from '../../../recoil/atoms';
 import {AppContext} from '../../../libs/contexts/AppProvider';
 import {request} from '../../../utils';
+import {Asset} from 'react-native-image-picker';
 
 export default function useCalibrationItem() {
   const [loading, setLoading] = React.useState(false);
@@ -256,6 +257,33 @@ export default function useCalibrationItem() {
       navigation.goBack();
     }
   };
+  const pickerImage = async (image: Asset) => {
+    try {
+      const form = new FormData();
+      form.append('file', {
+        uri: `file://${image.uri}`,
+        name: 'calibration',
+        type: image.type,
+      });
+      form.append('name', 'nuxt-rlm-bucket/calibration-image');
+      form.append('fileType', image.type);
+      const data = await request<{file: string}>(
+        `${defaultURL}/api/awsobjectsinbucket`,
+        {
+          method: 'POST',
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'multipart/form-data',
+          },
+          body: form,
+        },
+      );
+      setPhotoURI(data.file);
+    } catch (err) {
+      console.log(`${defaultURL}/api/inscalibration failed`, err);
+      setError('image upload failed');
+    }
+  };
 
   return {
     loading,
@@ -276,5 +304,6 @@ export default function useCalibrationItem() {
     photoURI,
     onChangePhoto,
     onCreateOrSave,
+    pickerImage,
   };
 }
