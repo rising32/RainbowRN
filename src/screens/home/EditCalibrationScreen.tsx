@@ -11,6 +11,7 @@ import {
 import {Picker} from '@react-native-picker/picker';
 import PhotoItem from '../../components/PhotoItem/PhotoItem';
 import useCalibrationItem from './hooks/useCalibrationItem';
+import DropDownPicker from 'react-native-dropdown-picker';
 
 const EditCalibrationScreen = () => {
   const {
@@ -32,6 +33,12 @@ const EditCalibrationScreen = () => {
     onCreateOrSave,
     pickerImage,
   } = useCalibrationItem();
+  const [open, setOpen] = React.useState(false);
+  const [value, setValue] = React.useState(null);
+  const [items, setItems] = React.useState([
+    {label: 'Apple', value: 'apple'},
+    {label: 'Banana', value: 'banana'},
+  ]);
 
   return (
     <View
@@ -63,7 +70,7 @@ const EditCalibrationScreen = () => {
           <View style={styles.label}>
             <Text style={{fontSize: 18, color: 'black'}}>Instrument S/N</Text>
           </View>
-          <View style={[{height: 54, borderWidth: 1, borderRadius: 5}]}>
+          {/* <View style={[{height: 54, borderWidth: 1, borderRadius: 5}]}>
             <Picker
               selectedValue={instrumentValue}
               onValueChange={(itemValue, itemIndex) =>
@@ -87,7 +94,15 @@ const EditCalibrationScreen = () => {
                 />
               ))}
             </Picker>
-          </View>
+          </View> */}
+          <DropDownPicker
+            open={open}
+            value={value}
+            items={items}
+            setOpen={setOpen}
+            setValue={setValue}
+            setItems={setItems}
+          />
         </View>
         <View style={styles.view}>
           <View style={styles.label}>
