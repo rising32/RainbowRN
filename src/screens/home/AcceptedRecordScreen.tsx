@@ -72,11 +72,8 @@ const AcceptedRecordScreen = ({
           paddingVertical: 10,
         }}>
         <View
-          style={{width: 100, alignItems: 'center', justifyContent: 'center'}}>
-          <Text style={{textAlign: 'center', fontWeight: 'bold', fontSize: 18}}>
-            Select
-          </Text>
-        </View>
+          style={{width: 50, alignItems: 'center', justifyContent: 'center'}}
+        />
         <View
           style={{width: 50, alignItems: 'center', justifyContent: 'center'}}>
           <Text style={{textAlign: 'center', fontWeight: 'bold', fontSize: 18}}>
