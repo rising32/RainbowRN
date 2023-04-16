@@ -31,7 +31,7 @@ const RejectedInspectionItem = ({
     } else {
       navigation.navigate(AUTHENTICATEDSCREENS.EDITINSPECTION, {
         item,
-        status: 'rejected',
+        type: 'rejected',
         title: 'Rejected Inspection',
       });
     }

@@ -23,7 +23,7 @@ const AcceptedInspectionItem = ({item, index}: Props) => {
   const onSelectItem = () => {
     navigation.navigate(AUTHENTICATEDSCREENS.EDITINSPECTION, {
       item,
-      status: 'accepted',
+      type: 'accepted',
       title: 'Accepted Inspection',
     });
   };

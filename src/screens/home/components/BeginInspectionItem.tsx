@@ -31,7 +31,7 @@ const BeginInspectionItem = ({
     } else {
       navigation.navigate(AUTHENTICATEDSCREENS.EDITINSPECTION, {
         item,
-        status: 'begin',
+        type: 'begin',
         title: 'Begin Inspection',
       });
     }

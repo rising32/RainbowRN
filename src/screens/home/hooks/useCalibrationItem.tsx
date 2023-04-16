@@ -12,15 +12,6 @@ import {instrumentState, userState} from '../../../recoil/atoms';
 import {AppContext} from '../../../libs/contexts/AppProvider';
 import {request} from '../../../utils';
 
-export type CalibrationEditModel = {
-  dateString: string;
-  timeString: string;
-  instrumentString: string;
-  rlsString: string;
-  visibleRLS: boolean;
-  mptString: string;
-  visibleMPT: boolean;
-};
 export default function useCalibrationItem() {
   const [loading, setLoading] = React.useState(false);
   const [error, setError] = React.useState('');
@@ -156,7 +147,8 @@ export default function useCalibrationItem() {
       setError('Instrument is required.');
       return;
     }
-    if (!user?._id) {
+    const id = user?._id || user?.userId;
+    if (!id) {
       return;
     }
     if (instrumentSN <= instrumentRLM.length) {
@@ -194,7 +186,7 @@ export default function useCalibrationItem() {
 
       const instrumentRLMNum = instrumentRLM.length;
       let params = {
-        userId: user._id,
+        userId: id,
         caliDate: date,
         caliInstrumentSN:
           instrumentSN > instrumentRLMNum
@@ -207,12 +199,14 @@ export default function useCalibrationItem() {
         caliInspectorName: user.firstName + ' ' + user.lastName,
       };
 
-      console.log(instrumentSN, instrumentRLMNum);
       if (instrumentSN <= instrumentRLMNum) {
         const value = instrumentRLM[instrumentSN - 1];
         const max = Math.max(value.instrumentFrom, value.instrumentTo);
         const min = Math.min(value.instrumentFrom, value.instrumentTo);
-        if (min < parseInt(rmlReading, 10) && parseInt(rmlReading, 10) < max) {
+        if (
+          min <= parseInt(rmlReading, 10) &&
+          parseInt(rmlReading, 10) <= max
+        ) {
           params = Object.assign(params, {caliStatus: 1});
         } else {
           params = Object.assign(params, {caliStatus: 2});
@@ -221,7 +215,10 @@ export default function useCalibrationItem() {
         const value = instrumentMPT[instrumentSN - instrumentRLMNum - 1];
         const max = Math.max(value.instrumentFrom, value.instrumentTo);
         const min = Math.min(value.instrumentFrom, value.instrumentTo);
-        if (min < parseInt(rmlReading, 10) && parseInt(rmlReading, 10) < max) {
+        if (
+          min <= parseInt(rmlReading, 10) &&
+          parseInt(rmlReading, 10) <= max
+        ) {
           params = Object.assign(params, {caliStatus: 1});
         } else {
           params = Object.assign(params, {caliStatus: 2});
@@ -231,6 +228,7 @@ export default function useCalibrationItem() {
         params = Object.assign(params, {caliPhoto: photoURI});
       }
 
+      console.log(params);
       if (calibration) {
         await request(`${defaultURL}/api/inscalibration/${calibration._id}`, {
           method: 'PUT',

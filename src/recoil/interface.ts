@@ -65,6 +65,7 @@ export type IInspection = {
   photosPoleBase2?: string;
   photosPoleBase3?: string;
   photosPoleBase4?: string;
+  gpsCoordinates?: string;
 };
 
 export type IWorkNumber = {
@@ -103,7 +104,7 @@ export type IAdmin = {
   ConFinanceManagerTelNo: string;
 };
 
-export type InspectionStatus = 'begin' | 'rejected' | 'accepted';
+export type InspectionType = 'begin' | 'rejected' | 'accepted';
 
 export type PhotoFileType = {
   uri: string;

@@ -4,7 +4,7 @@ import {
   NavigatorScreenParams,
 } from '@react-navigation/native';
 import {DrawerScreenProps} from '@react-navigation/drawer';
-import {ICalibration, IInspection, InspectionStatus} from '../recoil/interface';
+import {ICalibration, IInspection, InspectionType} from '../recoil/interface';
 
 export type PublicStackParamList = {
   Login: undefined;
@@ -16,7 +16,7 @@ export enum PUBLICSCREENS {
 export type AuthenticatedStackParamList = {
   Main: NavigatorScreenParams<DrawerParamList>;
   EditCalibration: {item: ICalibration | null; title: string};
-  EditInspection: {item: IInspection; status: InspectionStatus; title: string};
+  EditInspection: {item: IInspection; type: InspectionType; title: string};
   Camera: undefined;
 };
 export type AuthenticatedStackScreenProps<

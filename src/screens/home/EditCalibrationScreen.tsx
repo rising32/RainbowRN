@@ -171,31 +171,5 @@ const styles = StyleSheet.create({
     padding: 10,
     fontSize: 16,
   },
-  disableInput: {
-    width: '100%',
-    borderWidth: 1,
-    borderColor: 'gray',
-    borderRadius: 5,
-    padding: 10,
-    fontSize: 16,
-    backgroundColor: 'aliceblue',
-  },
-  dropdownStyle: {
-    width: '100%',
-    borderWidth: 1,
-    borderRadius: 5,
-    padding: 10,
-  },
-  dropdownBtnTxtStyle: {fontSize: 16, textAlign: 'left'},
-  photoView: {
-    width: '100%',
-    borderWidth: 1,
-    borderColor: 'gray',
-    borderRadius: 5,
-    backgroundColor: 'aliceblue',
-    height: 150,
-    justifyContent: 'center',
-    paddingVertical: 1,
-  },
 });
 export default EditCalibrationScreen;
