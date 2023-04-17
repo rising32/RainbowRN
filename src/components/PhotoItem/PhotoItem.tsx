@@ -1,5 +1,14 @@
 import React from 'react';
-import {Pressable, Image, Text, View, StyleSheet} from 'react-native';
+import {
+  Alert,
+  Pressable,
+  Image,
+  Text,
+  View,
+  StyleSheet,
+  PermissionsAndroid,
+  Platform,
+} from 'react-native';
 import {CameraSVG, CancelSVG, MediaImageSVG, UploadSVG} from '../Icons';
 import {
   Menu,
@@ -24,26 +33,59 @@ type Props = {
 
 const {SlideInMenu} = renderers;
 
-const PhotoItem = ({placeText, photoUri, pickerImage, cancelPhoto}: Props) => {
-  const openCamera = React.useCallback(() => {
-    launchCamera(
-      {
-        saveToPhotos: true,
-        mediaType: 'photo',
-        includeBase64: false,
-        includeExtra: true,
-      },
-      ({didCancel, assets}: ImagePickerResponse) => {
-        if (didCancel) {
-          console.log('User cancelled image picker');
-        } else {
-          if (assets && assets.length > 0) {
-            const image = assets[0];
-            pickerImage(image);
-          }
-        }
-      },
+const requestCameraPermission = async (): Promise<boolean> => {
+  if (Platform.OS !== 'android') {
+    return true;
+  }
+
+  const permission = PermissionsAndroid.PERMISSIONS.CAMERA;
+  if (permission == null) {
+    return false;
+  }
+  let hasPermission = await PermissionsAndroid.check(permission);
+  if (!hasPermission) {
+    const permissionRequestResult = await PermissionsAndroid.request(
+      permission,
     );
+    hasPermission = permissionRequestResult === 'granted';
+  }
+  return hasPermission;
+};
+
+const PhotoItem = ({placeText, photoUri, pickerImage, cancelPhoto}: Props) => {
+  const openCamera = React.useCallback(async () => {
+    try {
+      const hasPermission = await requestCameraPermission();
+      if (!hasPermission) {
+        Alert.alert('Permission denied!', 'Camera does not have permission.');
+        return;
+      }
+
+      await launchCamera(
+        {
+          saveToPhotos: true,
+          mediaType: 'photo',
+          includeBase64: false,
+          includeExtra: true,
+        },
+        ({didCancel, assets}: ImagePickerResponse) => {
+          if (didCancel) {
+            console.log('User cancelled image picker');
+          } else {
+            if (assets && assets.length > 0) {
+              const image = assets[0];
+              pickerImage(image);
+            }
+          }
+        },
+      );
+    } catch (e) {
+      const message = e instanceof Error ? e.message : JSON.stringify(e);
+      Alert.alert(
+        'Failed to open Camera!',
+        `An unexpected error occured while trying to open camera. ${message}`,
+      );
+    }
   }, [pickerImage]);
   const openGallery = React.useCallback(() => {
     launchImageLibrary(
