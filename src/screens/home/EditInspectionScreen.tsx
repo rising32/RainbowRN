@@ -778,6 +778,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     padding: 10,
     fontSize: 16,
+    color: 'black',
   },
 });
 export default EditInspectionScreen;
