@@ -5,8 +5,9 @@ import {
 } from '../../../navigation/types';
 import React from 'react';
 import {Alert, Keyboard, PermissionsAndroid} from 'react-native';
-import {useRecoilValue} from 'recoil';
+import {useRecoilValue, useSetRecoilState} from 'recoil';
 import {
+  coreState,
   criterialInfoState,
   locationListState,
   poleListState,
@@ -121,6 +122,7 @@ export default function useInspectionItem() {
   const poleList = useRecoilValue(poleListState);
   const locationList = useRecoilValue(locationListState);
   const userList = useRecoilValue(userListState);
+  const setCoreState = useSetRecoilState(coreState);
   const {
     paramMaterial,
     paramShape,
@@ -163,16 +165,7 @@ export default function useInspectionItem() {
       locationList.find(location => poleItem?.poleidLocation === location._id),
     [locationList, poleItem?.poleidLocation],
   );
-  React.useEffect(() => {
-    if (inspection) {
-      if (inspection?.gpsCoordinates) {
-        setGPSCoordinate(inspection.gpsCoordinates);
-      } else {
-        getGPSCordinate();
-      }
-    }
-  }, [inspection, inspection.gpsCoordinates]);
-  const getGPSCordinate = async () => {
+  const getGPSCordinate = React.useCallback(async () => {
     if (!(await requestLocationPermission())) {
       Alert.alert(
         'Permission denied!',
@@ -180,6 +173,7 @@ export default function useInspectionItem() {
       );
       return;
     }
+    setCoreState({loading: true});
     Geolocation.getCurrentPosition(
       info => {
         setGPSCoordinate(
@@ -189,13 +183,30 @@ export default function useInspectionItem() {
             10,
           )}`,
         );
+        setCoreState({loading: false});
       },
       err => {
-        console.log(err.code, err.message);
+        console.log(
+          'location getCurrentPosition failed',
+          err.code,
+          err.message,
+        );
+        Alert.alert(`Code ${err.code}`, err.message);
+        setCoreState({loading: false});
+        setError('location timeout');
       },
-      {enableHighAccuracy: true, timeout: 15000, maximumAge: 10000},
+      // {enableHighAccuracy: true, timeout: 15000, maximumAge: 10000},
     );
-  };
+  }, [setCoreState]);
+  React.useEffect(() => {
+    if (inspection) {
+      if (inspection?.gpsCoordinates) {
+        setGPSCoordinate(inspection.gpsCoordinates);
+      } else {
+        getGPSCordinate();
+      }
+    }
+  }, [getGPSCordinate, inspection, inspection.gpsCoordinates]);
   const onChangeGPSCoordinate = (text: string) => {
     setGPSCoordinate(text);
   };

@@ -7,6 +7,7 @@ import {
   StyleSheet,
   ActivityIndicator,
   ScrollView,
+  TouchableOpacity,
 } from 'react-native';
 import {Picker} from '@react-native-picker/picker';
 import PhotoItem from '../../components/PhotoItem/PhotoItem';
@@ -163,7 +164,7 @@ const EditInspectionScreen = () => {
               editable={false}
             />
             {inspectionType !== 'accepted' && (
-              <Pressable
+              <TouchableOpacity
                 style={{
                   position: 'absolute',
                   right: 10,
@@ -171,7 +172,7 @@ const EditInspectionScreen = () => {
                 }}
                 onPress={getGPSCordinate}>
                 <RefreshSVG width={22} height={22} stroke="black" />
-              </Pressable>
+              </TouchableOpacity>
             )}
           </View>
         </View>

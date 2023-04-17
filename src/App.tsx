@@ -6,6 +6,7 @@ import CustomStatusBar from './components/CustomStatusBar';
 import AppProvider from './libs/contexts/AppProvider';
 import {RecoilRoot} from 'recoil';
 import {MenuProvider} from 'react-native-popup-menu';
+import Core from './components/Core';
 
 const App = () => {
   return (
@@ -17,6 +18,7 @@ const App = () => {
               <CustomStatusBar />
               <Root />
             </AppProvider>
+            <Core />
           </RecoilRoot>
         </MenuProvider>
       </SafeAreaProvider>

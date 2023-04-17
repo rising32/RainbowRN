@@ -63,8 +63,8 @@ const Root = () => {
       }
     } catch (error) {
       console.log('login with AsyncStorage failed ..... error = ', error);
-      await AsyncStorage.removeItem('@user_token');
-      console.log('AsyncStorage remove user_token.....');
+      await AsyncStorage.removeItem('@user_id');
+      console.log('AsyncStorage remove user_id.....');
     } finally {
       setIsReady(true);
     }
