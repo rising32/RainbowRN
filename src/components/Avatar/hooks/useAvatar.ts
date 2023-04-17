@@ -9,7 +9,6 @@ export default function useAvatar() {
   const [loading, setLoading] = React.useState(false);
   const [error, setError] = React.useState('');
   const {defaultURL} = React.useContext(AppContext);
-  const [photoURI, setPhotoURI] = React.useState<string | null>(null);
   const [user, setUser] = useRecoilState(userState);
 
   const pickerImage = async (image: Asset) => {
@@ -41,16 +40,17 @@ export default function useAvatar() {
       );
       const params = {photoUrl: data.file};
       console.log(params);
-      await request(`${defaultURL}/api/usersadmin/${id}`, {
+      fetch(`${defaultURL}/api/usersadmin/${id}`, {
         method: 'PUT',
         headers: {
           Accept: 'application/json',
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(params),
+      }).then(res => {
+        console.log(res.status);
+        setUser({...user, photoUrl: data.file});
       });
-      setUser({...user, photoUrl: data.file});
-      setPhotoURI(data.file);
     } catch (err) {
       console.log(`${defaultURL}/api/usersadmin/${id}`, err);
       setError('image upload failed');
@@ -63,7 +63,6 @@ export default function useAvatar() {
     loading,
     error,
     user,
-    photoURI,
     pickerImage,
   };
 }

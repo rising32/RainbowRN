@@ -21,7 +21,7 @@ type Props = {
 
 const {SlideInMenu} = renderers;
 const Avatar = ({width}: Props) => {
-  const {photoURI, pickerImage} = useAvatar();
+  const {user, pickerImage} = useAvatar();
 
   const openCamera = React.useCallback(() => {
     launchCamera(
@@ -79,9 +79,9 @@ const Avatar = ({width}: Props) => {
           StyleSheet.absoluteFill,
           {alignItems: 'center', justifyContent: 'center'},
         ]}>
-        {photoURI ? (
+        {user?.photoUrl ? (
           <Image
-            source={{uri: photoURI}}
+            source={{uri: user?.photoUrl}}
             style={{width: width, height: width, borderRadius: width}}
           />
         ) : (
