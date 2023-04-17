@@ -23,20 +23,38 @@ const InspectionSearch = ({onHide, showSearch, onSearchQuery}: Props) => {
   const poleList = useRecoilValue(poleListState);
   const locationList = useRecoilValue(locationListState);
 
-  const locationIDData = useMemo(
-    () =>
-      locationList.map(element => {
-        return element.locationName;
-      }),
-    [locationList],
-  );
-  const poleIDData = useMemo(
-    () =>
-      poleList.map(element => {
-        return element.poleidName;
-      }),
-    [poleList],
-  );
+  const locationIDData = useMemo(() => {
+    let data = locationList.map(element => element.locationName);
+    const sortArray = data.sort((a, b) => {
+      const indexA = a.toUpperCase();
+      const indexB = b.toUpperCase();
+
+      if (indexA < indexB) {
+        return -1;
+      }
+      if (indexA > indexB) {
+        return 1;
+      }
+      return 0;
+    });
+    return sortArray;
+  }, [locationList]);
+  const poleIDData = useMemo(() => {
+    let data = poleList.map(element => element.poleidName);
+    const sortArray = data.sort((a, b) => {
+      const indexA = a.toUpperCase();
+      const indexB = b.toUpperCase();
+
+      if (indexA < indexB) {
+        return -1;
+      }
+      if (indexA > indexB) {
+        return 1;
+      }
+      return 0;
+    });
+    return sortArray;
+  }, [poleList]);
   const onSelectZoneOption = (option: string, remove: boolean) => {
     if (remove) {
       setSelectedZones([option]);

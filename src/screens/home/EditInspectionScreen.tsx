@@ -12,6 +12,7 @@ import {Picker} from '@react-native-picker/picker';
 import PhotoItem from '../../components/PhotoItem/PhotoItem';
 import useInspectionItem from './hooks/useInspectionItem';
 import {Asset} from 'react-native-image-picker';
+import {RefreshSVG} from '../../components/Icons';
 
 const EditInspectionScreen = () => {
   const {
@@ -30,6 +31,7 @@ const EditInspectionScreen = () => {
     poleItem,
     locationItem,
     gpsCoordinates,
+    getGPSCordinate,
     onChangeGPSCoordinate,
     inspectorName,
     selectedPoleShape,
@@ -153,12 +155,25 @@ const EditInspectionScreen = () => {
             <Text style={{fontSize: 18, color: 'black'}}>GPS Coordinates</Text>
           </View>
 
-          <TextInput
-            style={styles.input}
-            value={gpsCoordinates}
-            onChangeText={onChangeGPSCoordinate}
-            editable={false}
-          />
+          <View>
+            <TextInput
+              style={styles.input}
+              value={gpsCoordinates}
+              onChangeText={onChangeGPSCoordinate}
+              editable={false}
+            />
+            {inspectionType !== 'accepted' && (
+              <Pressable
+                style={{
+                  position: 'absolute',
+                  right: 10,
+                  top: 15,
+                }}
+                onPress={getGPSCordinate}>
+                <RefreshSVG width={22} height={22} stroke="black" />
+              </Pressable>
+            )}
+          </View>
         </View>
         <View style={styles.view}>
           <View style={styles.label}>
@@ -778,7 +793,6 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     padding: 10,
     fontSize: 16,
-    color: 'black',
   },
 });
 export default EditInspectionScreen;

@@ -53,8 +53,12 @@ const BeginInspectionItem = ({
       <TableBodyItem title={(index + 1).toString()} width={50} />
       <TableBodyItem title={item.workNumberText} width={160} />
       <TableBodyItem title={item.zoneText} width={160} />
-      <TableBodyItem title={item.locationText} width={550} textAlign="left" />
-      <TableBodyItem title={item.poleIdText} width={160} />
+      <Pressable onPress={onSelectItem}>
+        <TableBodyItem title={item.locationText} width={550} textAlign="left" />
+      </Pressable>
+      <Pressable onPress={onSelectItem}>
+        <TableBodyItem title={item.poleIdText} width={160} />
+      </Pressable>
       <TableBodyItem title={item.inspectorText} width={200} />
     </View>
   );

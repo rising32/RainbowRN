@@ -27,6 +27,7 @@ import PageEditSVG from './PageEditSVG';
 import NavArrowDownSVG from './NavArrowDownSVG';
 import NavArrowUpSVG from './NavArrowUpSVG';
 import ArrowLeftSVG from './ArrowLeftSVG';
+import RefreshSVG from './RefreshSVG';
 
 export {
   UserSVG,
@@ -58,4 +59,5 @@ export {
   NavArrowDownSVG,
   NavArrowUpSVG,
   ArrowLeftSVG,
+  RefreshSVG,
 };
