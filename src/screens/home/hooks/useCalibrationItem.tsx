@@ -25,6 +25,8 @@ export default function useCalibrationItem() {
   const [rmlReading, setRmlReading] = React.useState('');
   const [mptForce, setMptForce] = React.useState('');
   const [photoURI, setPhotoURI] = React.useState<string | null>(null);
+  const [instrumentPickerValue, setInstrumentPickerValue] =
+    React.useState(null);
 
   const navigation =
     useNavigation<
@@ -94,6 +96,24 @@ export default function useCalibrationItem() {
     }
     if (instrumentMPT.length > 0) {
       mpt = instrumentMPT.map(element => element.instrumentName);
+    }
+    return [...rlm, ...mpt];
+  }, [instrumentRLM, instrumentMPT]);
+
+  const instrumentList = React.useMemo(() => {
+    let rlm: {label: string; value: string}[] = [];
+    let mpt: {label: string; value: string}[] = [];
+    if (instrumentRLM.length > 0) {
+      rlm = instrumentRLM.map(element => ({
+        label: element.instrumentName,
+        value: element.instrumentName,
+      }));
+    }
+    if (instrumentMPT.length > 0) {
+      mpt = instrumentMPT.map(element => ({
+        label: element.instrumentName,
+        value: element.instrumentName,
+      }));
     }
     return [...rlm, ...mpt];
   }, [instrumentRLM, instrumentMPT]);
@@ -305,5 +325,8 @@ export default function useCalibrationItem() {
     onChangePhoto,
     onCreateOrSave,
     pickerImage,
+    instrumentList,
+    instrumentPickerValue,
+    setInstrumentPickerValue,
   };
 }

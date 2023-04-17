@@ -6,11 +6,10 @@ import {
   TextInput,
   StyleSheet,
   ActivityIndicator,
-  ScrollView,
 } from 'react-native';
-import {Picker} from '@react-native-picker/picker';
 import PhotoItem from '../../components/PhotoItem/PhotoItem';
 import useCalibrationItem from './hooks/useCalibrationItem';
+import DropDownPicker from 'react-native-dropdown-picker';
 
 const EditCalibrationScreen = () => {
   const {
@@ -18,9 +17,6 @@ const EditCalibrationScreen = () => {
     error,
     dateString,
     timeString,
-    changeInstrument,
-    instrumentValue,
-    instrumentPickerList,
     visibleRLS,
     visibleMPT,
     rmlReading,
@@ -31,20 +27,23 @@ const EditCalibrationScreen = () => {
     onChangePhoto,
     onCreateOrSave,
     pickerImage,
+    instrumentList,
   } = useCalibrationItem();
+  const [open, setOpen] = React.useState(false);
+  const [value, setValue] = React.useState(null);
+  console.log(value);
   return (
     <View
       style={{
         flex: 1,
       }}>
-      <ScrollView
-        style={{width: '100%'}}
-        contentContainerStyle={{
+      <View
+        style={{
           padding: 30,
           rowGap: 10,
           backgroundColor: 'white',
-        }}
-        showsVerticalScrollIndicator={false}>
+          width: '100%',
+        }}>
         <View style={styles.view}>
           <View style={styles.label}>
             <Text style={{fontSize: 18, color: 'black'}}>Date</Text>
@@ -58,35 +57,19 @@ const EditCalibrationScreen = () => {
           </View>
           <TextInput style={styles.input} value={timeString} editable={false} />
         </View>
-        <View style={styles.view}>
+        <View style={[styles.view, {zIndex: 3000}]}>
           <View style={styles.label}>
             <Text style={{fontSize: 18, color: 'black'}}>Instrument S/N</Text>
           </View>
-          <View style={[{height: 54, borderWidth: 1, borderRadius: 5}]}>
-            <Picker
-              selectedValue={instrumentValue}
-              onValueChange={(itemValue, itemIndex) =>
-                changeInstrument(itemValue, itemIndex)
-              }>
-              <Picker.Item
-                label={'Select'}
-                value={'Select'}
-                style={{
-                  color: 'ligthblue',
-                }}
-              />
-              {instrumentPickerList.map(pickerItem => (
-                <Picker.Item
-                  key={pickerItem}
-                  label={pickerItem}
-                  value={pickerItem}
-                  style={{
-                    color: instrumentValue === pickerItem ? 'black' : 'gray',
-                  }}
-                />
-              ))}
-            </Picker>
-          </View>
+          <DropDownPicker
+            open={open}
+            value={value}
+            items={instrumentList}
+            setOpen={setOpen}
+            setValue={setValue}
+            zIndex={3000}
+            zIndexInverse={1000}
+          />
         </View>
         <View style={styles.view}>
           <View style={styles.label}>
@@ -151,7 +134,7 @@ const EditCalibrationScreen = () => {
             )}
           </Pressable>
         </View>
-      </ScrollView>
+      </View>
     </View>
   );
 };

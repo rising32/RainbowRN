@@ -185,7 +185,7 @@ export default function useInspectionItem() {
         setGPSCoordinate(
           `${Number.parseFloat(info.coords.latitude.toString()).toFixed(
             10,
-          )} , ${Number.parseFloat(info.coords.longitude.toString()).toFixed(
+          )}, ${Number.parseFloat(info.coords.longitude.toString()).toFixed(
             10,
           )}`,
         );
