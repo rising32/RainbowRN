@@ -33,21 +33,28 @@ type Props = {
 
 const {SlideInMenu} = renderers;
 
-const requestCameraPermission = async (): Promise<boolean> => {
+const requestWritePermission = async (): Promise<boolean> => {
   if (Platform.OS !== 'android') {
     return true;
   }
 
-  const permission = PermissionsAndroid.PERMISSIONS.CAMERA;
+  // const permission = PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE;
+  const permission =
+    Number(Platform.Version) >= 33
+      ? PermissionsAndroid.PERMISSIONS.READ_MEDIA_IMAGES
+      : PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE;
   if (permission == null) {
     return false;
   }
   let hasPermission = await PermissionsAndroid.check(permission);
+  console.log('hasPermission = ', hasPermission);
   if (!hasPermission) {
     const permissionRequestResult = await PermissionsAndroid.request(
       permission,
     );
-    hasPermission = permissionRequestResult === 'granted';
+    console.log('permissionRequestResult = ', permissionRequestResult);
+    hasPermission =
+      permissionRequestResult === PermissionsAndroid.RESULTS.GRANTED;
   }
   return hasPermission;
 };
@@ -55,9 +62,12 @@ const requestCameraPermission = async (): Promise<boolean> => {
 const PhotoItem = ({placeText, photoUri, pickerImage, cancelPhoto}: Props) => {
   const openCamera = React.useCallback(async () => {
     try {
-      const hasPermission = await requestCameraPermission();
-      if (!hasPermission) {
-        Alert.alert('Permission denied!', 'Camera does not have permission.');
+      const hasWritePermission = await requestWritePermission();
+      if (!hasWritePermission) {
+        Alert.alert(
+          'Permission denied!',
+          'app does not have write permission.',
+        );
         return;
       }
 
@@ -87,25 +97,33 @@ const PhotoItem = ({placeText, photoUri, pickerImage, cancelPhoto}: Props) => {
       );
     }
   }, [pickerImage]);
-  const openGallery = React.useCallback(() => {
-    launchImageLibrary(
-      {
-        selectionLimit: 1,
-        mediaType: 'photo',
-        includeBase64: false,
-        includeExtra: true,
-      },
-      ({didCancel, assets}: ImagePickerResponse) => {
-        if (didCancel) {
-          console.log('User cancelled image picker');
-        } else {
-          if (assets && assets.length > 0) {
-            const image = assets[0];
-            pickerImage(image);
+  const openGallery = React.useCallback(async () => {
+    try {
+      await launchImageLibrary(
+        {
+          selectionLimit: 1,
+          mediaType: 'photo',
+          includeBase64: false,
+          includeExtra: true,
+        },
+        ({didCancel, assets}: ImagePickerResponse) => {
+          if (didCancel) {
+            console.log('User cancelled image picker');
+          } else {
+            if (assets && assets.length > 0) {
+              const image = assets[0];
+              pickerImage(image);
+            }
           }
-        }
-      },
-    );
+        },
+      );
+    } catch (e) {
+      const message = e instanceof Error ? e.message : JSON.stringify(e);
+      Alert.alert(
+        'Failed to launch image gallery!',
+        `An unexpected error occured while trying to launch image gallery. ${message}`,
+      );
+    }
   }, [pickerImage]);
   return (
     <Pressable
