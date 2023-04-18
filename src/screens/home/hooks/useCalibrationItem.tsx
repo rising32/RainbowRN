@@ -25,6 +25,9 @@ export default function useCalibrationItem() {
   const [rmlReading, setRmlReading] = React.useState('');
   const [mptForce, setMptForce] = React.useState('');
   const [photoURI, setPhotoURI] = React.useState<string | null>(null);
+  const [uploadPhotoURI, setUploadPhotoURI] = React.useState<string | null>(
+    null,
+  );
   const [instrumentPickerValue, setInstrumentPickerValue] =
     React.useState(null);
 
@@ -247,8 +250,12 @@ export default function useCalibrationItem() {
         }
       }
 
-      if (photoURI) {
-        params = Object.assign(params, {caliPhoto: photoURI});
+      if (uploadPhotoURI) {
+        params = Object.assign(params, {caliPhoto: uploadPhotoURI});
+      } else {
+        if (photoURI) {
+          params = Object.assign(params, {caliPhoto: photoURI});
+        }
       }
 
       console.log(params);
@@ -304,7 +311,7 @@ export default function useCalibrationItem() {
       );
       Alert.alert('Image Upload successed!', data.file);
       console.log('Image Upload successed!', data.file);
-      setPhotoURI(data.file);
+      setUploadPhotoURI(data.file);
       setCoreState({loading: false});
     } catch (err) {
       console.log(`${defaultURL}/api/inscalibration failed`, err);

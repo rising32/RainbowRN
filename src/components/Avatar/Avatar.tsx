@@ -84,7 +84,7 @@ const Avatar = ({width}: Props) => {
           <FastImage
             source={{uri: user?.photoUrl}}
             style={{width: width, height: width, borderRadius: width}}
-            resizeMode={FastImage.resizeMode.contain}
+            resizeMode={FastImage.resizeMode.cover}
           />
         ) : (
           <UserSVG height={width * 0.8} width={width * 0.8} />
