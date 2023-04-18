@@ -2,7 +2,6 @@ import React from 'react';
 import {useRecoilState, useSetRecoilState} from 'recoil';
 import {coreState, userState} from '../../../recoil/atoms';
 import {AppContext} from '../../../libs/contexts/AppProvider';
-import {request} from '../../../utils';
 import {Asset} from 'react-native-image-picker';
 
 export default function useAvatar() {
@@ -28,31 +27,34 @@ export default function useAvatar() {
       });
       form.append('name', 'nuxt-rlm-bucket/user-image');
       form.append('fileType', image.type);
-      const data = await request<{file: string}>(
-        `${defaultURL}/api/awsobjectsinbucket`,
-        {
-          method: 'POST',
-          headers: {
-            Accept: 'application/json',
-            'Content-Type': 'multipart/form-data',
-          },
-          body: form,
-        },
-      );
-      const params = {photoUrl: data.file};
-      setCoreState({loading: true, loadingText: 'Updating user avatar'});
-      fetch(`${defaultURL}/api/usersadmin/${id}`, {
-        method: 'PUT',
+      fetch(`${defaultURL}/api/awsobjectsinbucket`, {
+        method: 'POST',
         headers: {
           Accept: 'application/json',
-          'Content-Type': 'application/json',
+          'Content-Type': 'multipart/form-data',
         },
-        body: JSON.stringify(params),
-      }).then(res => {
-        console.log(res.status);
-        setUser({...user, photoUrl: data.file});
-        setCoreState({loading: false});
-      });
+        body: form,
+      })
+        .then(response => response.json())
+        .then(json => {
+          console.log(json);
+          console.log('Image Upload successed!', JSON.stringify(json));
+          setCoreState({loading: false});
+          const params = {photoUrl: json.file};
+          setCoreState({loading: true, loadingText: 'Updating user avatar'});
+          fetch(`${defaultURL}/api/usersadmin/${id}`, {
+            method: 'PUT',
+            headers: {
+              Accept: 'application/json',
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(params),
+          }).then(res => {
+            console.log(res.status);
+            setUser({...user, photoUrl: json.file});
+            setCoreState({loading: false});
+          });
+        });
     } catch (err) {
       console.log(`${defaultURL}/api/usersadmin/${id}`, err);
       setError('image upload failed');

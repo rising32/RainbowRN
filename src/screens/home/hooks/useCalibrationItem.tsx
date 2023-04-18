@@ -291,21 +291,22 @@ export default function useCalibrationItem() {
       });
       form.append('name', 'nuxt-rlm-bucket/calibration-image');
       form.append('fileType', image.type);
-      const data = await request<{file: string}>(
-        `${defaultURL}/api/awsobjectsinbucket`,
-        {
-          method: 'POST',
-          headers: {
-            Accept: 'application/json',
-            'Content-Type': 'multipart/form-data',
-          },
-          body: form,
+      fetch(`${defaultURL}/api/awsobjectsinbucket`, {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'multipart/form-data',
         },
-      );
-      Alert.alert('Image Upload successed!', data.file);
-      console.log('Image Upload successed!', data.file);
-      setPhotoURI(data.file);
-      setCoreState({loading: false});
+        body: form,
+      })
+        .then(response => response.json())
+        .then(json => {
+          console.log(json);
+          Alert.alert('Image Upload successed!', JSON.stringify(json));
+          console.log('Image Upload successed!', JSON.stringify(json));
+          setPhotoURI(json.file);
+          setCoreState({loading: false});
+        });
     } catch (err) {
       console.log(`${defaultURL}/api/inscalibration failed`, err);
       setError('image upload failed');

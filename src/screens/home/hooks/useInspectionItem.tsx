@@ -847,46 +847,49 @@ export default function useInspectionItem() {
       });
       form.append('name', 'nuxt-rlm-bucket/inspection-image');
       form.append('fileType', image.type);
-      const data = await request<{file: string}>(
-        `${defaultURL}/api/awsobjectsinbucket`,
-        {
-          method: 'POST',
-          headers: {
-            Accept: 'application/json',
-            'Content-Type': 'multipart/form-data',
-          },
-          body: form,
+      fetch(`${defaultURL}/api/awsobjectsinbucket`, {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'multipart/form-data',
         },
-      );
-      switch (kind) {
-        case 'id':
-          setPhotosPoleId(data.file);
-          break;
-        case 'label':
-          setPhotosPoleLabel(data.file);
-          break;
-        case 'entire':
-          setPhotosEntirePole(data.file);
-          break;
-        case 'other':
-          setPhotosOther(data.file);
-          break;
-        case 'base1':
-          setPhotosPoleBase1(data.file);
-          break;
-        case 'base2':
-          setPhotosPoleBase2(data.file);
-          break;
-        case 'base3':
-          setPhotosPoleBase3(data.file);
-          break;
-        case 'base4':
-          setPhotosPoleBase4(data.file);
-          break;
-        default:
-          console.log('Sorry, we are out of photo.');
-      }
-      setCoreState({loading: false});
+        body: form,
+      })
+        .then(response => response.json())
+        .then(json => {
+          console.log(json);
+          Alert.alert('Image Upload successed!', JSON.stringify(json));
+          console.log('Image Upload successed!', JSON.stringify(json));
+          switch (kind) {
+            case 'id':
+              setPhotosPoleId(json.file);
+              break;
+            case 'label':
+              setPhotosPoleLabel(json.file);
+              break;
+            case 'entire':
+              setPhotosEntirePole(json.file);
+              break;
+            case 'other':
+              setPhotosOther(json.file);
+              break;
+            case 'base1':
+              setPhotosPoleBase1(json.file);
+              break;
+            case 'base2':
+              setPhotosPoleBase2(json.file);
+              break;
+            case 'base3':
+              setPhotosPoleBase3(json.file);
+              break;
+            case 'base4':
+              setPhotosPoleBase4(json.file);
+              break;
+            default:
+              console.log('Sorry, we are out of photo.');
+          }
+          setCoreState({loading: false});
+        });
     } catch (err) {
       console.log(`${defaultURL}/api/inscalibration failed`, err);
       setError('image upload failed');
