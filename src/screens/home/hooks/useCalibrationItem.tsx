@@ -282,6 +282,7 @@ export default function useCalibrationItem() {
   const pickerImage = async (image: Asset) => {
     try {
       setCoreState({loading: true, loadingText: 'Uploading'});
+      setPhotoURI(`file://${image.uri}`);
       const form = new FormData();
       form.append('file', {
         uri: `file://${image.uri}`,
@@ -301,6 +302,8 @@ export default function useCalibrationItem() {
           body: form,
         },
       );
+      Alert.alert('Image Upload successed!', data.file);
+      console.log('Image Upload successed!', data.file);
       setPhotoURI(data.file);
       setCoreState({loading: false});
     } catch (err) {

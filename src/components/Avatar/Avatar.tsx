@@ -1,5 +1,5 @@
 import React from 'react';
-import {Pressable, Image, View, Text, StyleSheet} from 'react-native';
+import {Pressable, View, Text, StyleSheet} from 'react-native';
 import {CameraSVG, MediaImageSVG, UserSVG} from '../Icons';
 import {
   ImagePickerResponse,
@@ -14,6 +14,7 @@ import {
   MenuTrigger,
   renderers,
 } from 'react-native-popup-menu';
+import FastImage from 'react-native-fast-image';
 
 type Props = {
   width: number;
@@ -80,9 +81,10 @@ const Avatar = ({width}: Props) => {
           {alignItems: 'center', justifyContent: 'center'},
         ]}>
         {user?.photoUrl ? (
-          <Image
+          <FastImage
             source={{uri: user?.photoUrl}}
             style={{width: width, height: width, borderRadius: width}}
+            resizeMode={FastImage.resizeMode.contain}
           />
         ) : (
           <UserSVG height={width * 0.8} width={width * 0.8} />

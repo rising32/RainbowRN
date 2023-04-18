@@ -2,7 +2,6 @@ import React from 'react';
 import {
   Alert,
   Pressable,
-  Image,
   Text,
   View,
   StyleSheet,
@@ -23,6 +22,7 @@ import {
   launchCamera,
   launchImageLibrary,
 } from 'react-native-image-picker';
+import FastImage from 'react-native-fast-image';
 
 type Props = {
   placeText?: string;
@@ -144,13 +144,13 @@ const PhotoItem = ({placeText, photoUri, pickerImage, cancelPhoto}: Props) => {
         ]}>
         {photoUri ? (
           <View style={{width: '100%', height: '100%'}}>
-            <Image
+            <FastImage
               source={{uri: photoUri}}
               style={{
                 width: '100%',
                 height: '100%',
-                resizeMode: 'contain',
               }}
+              resizeMode={FastImage.resizeMode.contain}
             />
           </View>
         ) : (
