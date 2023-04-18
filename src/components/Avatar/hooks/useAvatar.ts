@@ -1,6 +1,6 @@
 import React from 'react';
-import {useRecoilState} from 'recoil';
-import {userState} from '../../../recoil/atoms';
+import {useRecoilState, useSetRecoilState} from 'recoil';
+import {coreState, userState} from '../../../recoil/atoms';
 import {AppContext} from '../../../libs/contexts/AppProvider';
 import {request} from '../../../utils';
 import {Asset} from 'react-native-image-picker';
@@ -10,6 +10,7 @@ export default function useAvatar() {
   const [error, setError] = React.useState('');
   const {defaultURL} = React.useContext(AppContext);
   const [user, setUser] = useRecoilState(userState);
+  const setCoreState = useSetRecoilState(coreState);
 
   const pickerImage = async (image: Asset) => {
     const id = user?._id || user?.userId;
@@ -18,7 +19,7 @@ export default function useAvatar() {
     }
     try {
       setLoading(true);
-      console.log(image);
+      setCoreState({loading: true, loadingText: 'Uploading'});
       const form = new FormData();
       form.append('file', {
         uri: `file://${image.uri}`,
@@ -39,7 +40,7 @@ export default function useAvatar() {
         },
       );
       const params = {photoUrl: data.file};
-      console.log(params);
+      setCoreState({loading: true, loadingText: 'Updating user avatar'});
       fetch(`${defaultURL}/api/usersadmin/${id}`, {
         method: 'PUT',
         headers: {
@@ -50,6 +51,7 @@ export default function useAvatar() {
       }).then(res => {
         console.log(res.status);
         setUser({...user, photoUrl: data.file});
+        setCoreState({loading: false});
       });
     } catch (err) {
       console.log(`${defaultURL}/api/usersadmin/${id}`, err);

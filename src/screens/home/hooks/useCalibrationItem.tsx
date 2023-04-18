@@ -4,11 +4,11 @@ import {
   AuthenticatedStackScreenProps,
 } from '../../../navigation/types';
 import React from 'react';
-import {Keyboard} from 'react-native';
+import {Alert, Keyboard} from 'react-native';
 import {ICalibration} from '../../../recoil/interface';
 import {format} from 'date-fns';
-import {useRecoilValue} from 'recoil';
-import {instrumentState, userState} from '../../../recoil/atoms';
+import {useRecoilValue, useSetRecoilState} from 'recoil';
+import {coreState, instrumentState, userState} from '../../../recoil/atoms';
 import {AppContext} from '../../../libs/contexts/AppProvider';
 import {request} from '../../../utils';
 import {Asset} from 'react-native-image-picker';
@@ -25,7 +25,6 @@ export default function useCalibrationItem() {
   const [rmlReading, setRmlReading] = React.useState('');
   const [mptForce, setMptForce] = React.useState('');
   const [photoURI, setPhotoURI] = React.useState<string | null>(null);
-  const [selectedPhoto, setSelectedPhoto] = React.useState<Asset | null>(null);
   const [instrumentPickerValue, setInstrumentPickerValue] =
     React.useState(null);
 
@@ -41,6 +40,7 @@ export default function useCalibrationItem() {
   const {instrumentRLM, instrumentMPT} = useRecoilValue(instrumentState);
   const {defaultURL} = React.useContext(AppContext);
   const user = useRecoilValue(userState);
+  const setCoreState = useSetRecoilState(coreState);
 
   React.useEffect(() => {
     if (route.params.item) {
@@ -247,31 +247,8 @@ export default function useCalibrationItem() {
         }
       }
 
-      if (selectedPhoto) {
-        const form = new FormData();
-        form.append('file', {
-          uri: `file://${selectedPhoto.uri}`,
-          name: 'calibration',
-          type: selectedPhoto.type,
-        });
-        form.append('name', 'nuxt-rlm-bucket/calibration-image');
-        form.append('fileType', selectedPhoto.type);
-        const data = await request<{file: string}>(
-          `${defaultURL}/api/awsobjectsinbucket`,
-          {
-            method: 'POST',
-            headers: {
-              Accept: 'application/json',
-              'Content-Type': 'multipart/form-data',
-            },
-            body: form,
-          },
-        );
-        params = Object.assign(params, {caliPhoto: data.file});
-      } else {
-        if (photoURI) {
-          params = Object.assign(params, {caliPhoto: photoURI});
-        }
+      if (photoURI) {
+        params = Object.assign(params, {caliPhoto: photoURI});
       }
 
       console.log(params);
@@ -303,8 +280,34 @@ export default function useCalibrationItem() {
     }
   };
   const pickerImage = async (image: Asset) => {
-    setPhotoURI(`file://${image.uri}`);
-    setSelectedPhoto(image);
+    try {
+      setCoreState({loading: true, loadingText: 'Uploading'});
+      const form = new FormData();
+      form.append('file', {
+        uri: `file://${image.uri}`,
+        name: 'calibration',
+        type: image.type,
+      });
+      form.append('name', 'nuxt-rlm-bucket/calibration-image');
+      form.append('fileType', image.type);
+      const data = await request<{file: string}>(
+        `${defaultURL}/api/awsobjectsinbucket`,
+        {
+          method: 'POST',
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'multipart/form-data',
+          },
+          body: form,
+        },
+      );
+      setPhotoURI(data.file);
+      setCoreState({loading: false});
+    } catch (err) {
+      console.log(`${defaultURL}/api/inscalibration failed`, err);
+      setError('image upload failed');
+      Alert.alert('Image Upload failed!');
+    }
   };
 
   return {

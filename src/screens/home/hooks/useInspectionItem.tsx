@@ -173,7 +173,7 @@ export default function useInspectionItem() {
       );
       return;
     }
-    setCoreState({loading: true});
+    setCoreState({loading: true, loadingText: 'Loading'});
     Geolocation.getCurrentPosition(
       info => {
         setGPSCoordinate(
@@ -838,6 +838,7 @@ export default function useInspectionItem() {
   };
   const pickerImage = async (image: Asset, kind: PhotoKind) => {
     try {
+      setCoreState({loading: true, loadingText: 'Uploading'});
       const form = new FormData();
       form.append('file', {
         uri: `file://${image.uri}`,
@@ -885,9 +886,11 @@ export default function useInspectionItem() {
         default:
           console.log('Sorry, we are out of photo.');
       }
+      setCoreState({loading: false});
     } catch (err) {
       console.log(`${defaultURL}/api/inscalibration failed`, err);
       setError('image upload failed');
+      Alert.alert('Image Upload failed!');
     }
   };
 
