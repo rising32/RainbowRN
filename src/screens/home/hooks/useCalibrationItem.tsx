@@ -25,6 +25,7 @@ export default function useCalibrationItem() {
   const [rmlReading, setRmlReading] = React.useState('');
   const [mptForce, setMptForce] = React.useState('');
   const [photoURI, setPhotoURI] = React.useState<string | null>(null);
+  const [selectedPhoto, setSelectedPhoto] = React.useState<Asset | null>(null);
   const [instrumentPickerValue, setInstrumentPickerValue] =
     React.useState(null);
 
@@ -245,8 +246,32 @@ export default function useCalibrationItem() {
           params = Object.assign(params, {caliStatus: 2});
         }
       }
-      if (photoURI) {
-        params = Object.assign(params, {caliPhoto: photoURI});
+
+      if (selectedPhoto) {
+        const form = new FormData();
+        form.append('file', {
+          uri: `file://${selectedPhoto.uri}`,
+          name: 'calibration',
+          type: selectedPhoto.type,
+        });
+        form.append('name', 'nuxt-rlm-bucket/calibration-image');
+        form.append('fileType', selectedPhoto.type);
+        const data = await request<{file: string}>(
+          `${defaultURL}/api/awsobjectsinbucket`,
+          {
+            method: 'POST',
+            headers: {
+              Accept: 'application/json',
+              'Content-Type': 'multipart/form-data',
+            },
+            body: form,
+          },
+        );
+        params = Object.assign(params, {caliPhoto: data.file});
+      } else {
+        if (photoURI) {
+          params = Object.assign(params, {caliPhoto: photoURI});
+        }
       }
 
       console.log(params);
@@ -278,31 +303,8 @@ export default function useCalibrationItem() {
     }
   };
   const pickerImage = async (image: Asset) => {
-    try {
-      const form = new FormData();
-      form.append('file', {
-        uri: `file://${image.uri}`,
-        name: 'calibration',
-        type: image.type,
-      });
-      form.append('name', 'nuxt-rlm-bucket/calibration-image');
-      form.append('fileType', image.type);
-      const data = await request<{file: string}>(
-        `${defaultURL}/api/awsobjectsinbucket`,
-        {
-          method: 'POST',
-          headers: {
-            Accept: 'application/json',
-            'Content-Type': 'multipart/form-data',
-          },
-          body: form,
-        },
-      );
-      setPhotoURI(data.file);
-    } catch (err) {
-      console.log(`${defaultURL}/api/inscalibration failed`, err);
-      setError('image upload failed');
-    }
+    setPhotoURI(`file://${image.uri}`);
+    setSelectedPhoto(image);
   };
 
   return {
