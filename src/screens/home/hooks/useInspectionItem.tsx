@@ -273,6 +273,8 @@ export default function useInspectionItem() {
   }, [inspection?.poleType, paramType]);
   const changePoleType = (value: string | null) => {
     setSelectedPoleType(value);
+    const index = paramType.findIndex(element => element === value);
+    setPoleTypeIndex(index);
     setError('');
   };
   React.useEffect(() => {
