@@ -44,7 +44,7 @@ export default function useAuth() {
         setError('Invalid Credentials.');
       }
     } catch (err) {
-      console.log('login error = ', err);
+      console.log('login error = ', JSON.stringify(err));
       setError('Username or Password is wrong.');
     } finally {
       setLoading(false);
