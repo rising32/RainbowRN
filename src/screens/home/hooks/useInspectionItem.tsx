@@ -4,7 +4,7 @@ import {
   AuthenticatedStackScreenProps,
 } from '../../../navigation/types';
 import React from 'react';
-import {Alert, Keyboard, PermissionsAndroid} from 'react-native';
+import {Alert, Keyboard, PermissionsAndroid, Platform} from 'react-native';
 import {useRecoilValue, useSetRecoilState} from 'recoil';
 import {
   coreState,
@@ -839,12 +839,20 @@ export default function useInspectionItem() {
     }
   };
   const pickerImage = async (image: Asset, kind: PhotoKind) => {
+    if (!image.uri) {
+      return;
+    }
     try {
       setCoreState({loading: true, loadingText: 'Uploading'});
+      const prefix = image.fileName?.split('.')[1];
+      const uri =
+        Platform.OS === 'android'
+          ? image.uri
+          : image.uri.replace('file://', '');
       const form = new FormData();
       form.append('file', {
-        uri: `file://${image.uri}`,
-        name: 'inspection',
+        uri,
+        name: `inspection.${prefix}`,
         type: image.type,
       });
       form.append('name', 'nuxt-rlm-bucket/inspection-image');

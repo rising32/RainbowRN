@@ -19,10 +19,13 @@ export default function useAvatar() {
     try {
       setLoading(true);
       setCoreState({loading: true, loadingText: 'Uploading'});
+
+      const prefix = image.fileName?.split('.')[1];
+      const uri = image.uri;
       const form = new FormData();
       form.append('file', {
-        uri: `file://${image.uri}`,
-        name: 'user',
+        uri,
+        name: `user.${prefix}`,
         type: image.type,
       });
       form.append('name', 'nuxt-rlm-bucket/user-image');

@@ -4,7 +4,7 @@ import {
   AuthenticatedStackScreenProps,
 } from '../../../navigation/types';
 import React from 'react';
-import {Alert, Keyboard} from 'react-native';
+import {Alert, Keyboard, Platform} from 'react-native';
 import {ICalibration} from '../../../recoil/interface';
 import {format} from 'date-fns';
 import {useRecoilValue, useSetRecoilState} from 'recoil';
@@ -280,13 +280,22 @@ export default function useCalibrationItem() {
     }
   };
   const pickerImage = async (image: Asset) => {
+    if (!image.uri) {
+      return;
+    }
     try {
       setCoreState({loading: true, loadingText: 'Uploading'});
-      // setPhotoURI(`file://${image.uri}`);
+      const prefix = image.fileName?.split('.')[1];
+      const uri =
+        Platform.OS === 'android'
+          ? image.uri
+          : image.uri.replace('file://', '');
+      // setPhotoURI(uri);
+      console.log(uri);
       const form = new FormData();
       form.append('file', {
-        uri: `file://${image.uri}`,
-        name: 'calibration',
+        uri,
+        name: `calibration.${prefix}`,
         type: image.type,
       });
       form.append('name', 'nuxt-rlm-bucket/calibration-image');
